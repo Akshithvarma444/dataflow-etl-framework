@@ -6,9 +6,10 @@ Each entry states the decision, why it was made, and what it costs.
 
 **D1. Additions to the suggested repository layout.**
 `data/expected/` keeps test-oracle answers apart from input data, as the brief requires.
-`scripts/` holds tooling that is not part of the framework. `tests/unit/test_config.py` tests
-the config module. `record_history` is an extra table (D7). `pyproject.toml` holds pytest and
-coverage settings only.
+`scripts/` holds tooling that is not part of the framework. `src/core/contract.py` holds the contract
+models, `src/validators/validator.py` and `result.py` tie the validators together. Extra test files
+cover config, the CLI, and the generator. `record_history` is an extra table (D7). `pyproject.toml` holds
+pytest and coverage settings only.
 
 **D2. Separate PostgreSQL schemas (`olist`, `hotel`, `ops`).**
 Table names such as `reviews` stay readable, and datasets cannot collide.
@@ -79,10 +80,30 @@ When a contract names a `version_column`, an upsert only applies if the incoming
 older than the stored one, so a late-delivered old file cannot overwrite newer data. Such rows are
 counted as stale. Tables without a usable version are last-write-wins, which is documented per table.
 
-**D13. Late parents: rejected children are replayable.**
-A child whose parent has not arrived is quarantined with `fk_violation`. `rejected_records` retains
-the original record and a `resolved_at` column, so children can be retried after the parent arrives,
-with no need to reprocess a file unrelated to the fix.
+**D13. Late parents: rejected children recover automatically.**
+A child whose parent has not arrived is quarantined with `fk_violation`. Each run that processes a file
+then retries open rejections whose only failure is a missing parent, and marks those that now pass with
+`resolved_at`. Rows also rejected for another reason stay in quarantine. Nothing else needs reprocessing.
+
+**D16. Reconciliation runs before commit and can block it.**
+Source totals come from raw text before validation, independent of transformation. A difference nothing
+explains raises an error and rolls back, so a transformation bug cannot publish wrong numbers. A difference
+is explained only by a known cause, such as rows that were already present under another file name.
+`scripts/verify_real_data.py` adds a second check that shares no code with the pipeline.
+
+**D17. A zero-byte file fails, but a header-only file is an empty batch.**
+A zero-byte file suggests a broken delivery, so it stops the run. A header-only file is a valid delivery with
+nothing in it. It succeeds with zero rows and, importantly, does not trigger snapshot deletion, or a
+truncated hotel file would wipe its bookings.
+
+**D18. Restoring an earlier file version is treated as a change.**
+The skip check compares with the *latest* load of a file, not any earlier one. Otherwise, loading version A, then
+B, then A again would skip the last step and leave B's data in place.
+
+**D19. A missing required column stops the run. A missing optional one does not.**
+Every row would fail without a required column, which is a broken delivery rather than a data-quality issue,
+and filling the quarantine with every row would hide that. Unexpected columns are ignored and reported by
+default, with `on_unexpected_column: fail` available per table. Rejected rows keep them in `original_record`.
 
 ## Environment
 

@@ -16,6 +16,7 @@ MONTHS = {
     )
 }
 LARGE_PARTY = 10
+MAX_PLAUSIBLE_DAYS = 3660  # matches the implausible_* rules in the contract
 
 
 def _arrival_date(frame: pd.DataFrame) -> pd.Series:
@@ -77,5 +78,7 @@ class HotelTransformer(BaseTransformer):
 
     def rule_checkout_date_mismatch(self, frame: pd.DataFrame) -> pd.Series:
         nights = _total_nights(frame).astype("float64")
+        # Values rejected by the implausible_* rules would otherwise overflow a date here.
+        nights = nights.where(nights.abs() <= MAX_PLAUSIBLE_DAYS)
         expected = _arrival_date(frame) + pd.to_timedelta(nights, unit="D")
         return (frame["reservation_status"] == "Check-Out") & (frame["reservation_status_date"] != expected)

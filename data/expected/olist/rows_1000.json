@@ -1,0 +1,999 @@
+{
+  "dataset": "olist",
+  "rows": 1000,
+  "seed": 42,
+  "late": {
+    "order_id": "700222efe9d1fc20c453a88ab5a28d14",
+    "item_total": 50.0
+  },
+  "out_of_order": {
+    "order_id": "7b9b436cd2670e815ed7c9ef51f5e820",
+    "final_status": "delivered"
+  },
+  "clean": {
+    "geolocation": {
+      "source_rows": 2008,
+      "rejected": 0,
+      "target_rows": 1406,
+      "collapsed": 602
+    },
+    "product_category_translations": {
+      "source_rows": 10,
+      "rejected": 0,
+      "target_rows": 10,
+      "collapsed": 0
+    },
+    "customers": {
+      "source_rows": 1000,
+      "rejected": 0,
+      "target_rows": 1000,
+      "collapsed": 0
+    },
+    "sellers": {
+      "source_rows": 33,
+      "rejected": 0,
+      "target_rows": 33,
+      "collapsed": 0
+    },
+    "products": {
+      "source_rows": 333,
+      "rejected": 0,
+      "target_rows": 333,
+      "collapsed": 0
+    },
+    "orders": {
+      "source_rows": 1000,
+      "rejected": 0,
+      "target_rows": 1000,
+      "collapsed": 0
+    },
+    "order_items": {
+      "source_rows": 1199,
+      "rejected": 0,
+      "target_rows": 1199,
+      "collapsed": 0,
+      "price_total": 313872.9,
+      "freight_total": 35608.1
+    },
+    "payments": {
+      "source_rows": 1053,
+      "rejected": 0,
+      "target_rows": 1053,
+      "collapsed": 0,
+      "payment_total": 349295.86
+    },
+    "reviews": {
+      "source_rows": 990,
+      "rejected": 0,
+      "target_rows": 990,
+      "collapsed": 0
+    },
+    "order_summary": {
+      "target_rows": 1000
+    }
+  },
+  "dirty": {
+    "geolocation": {
+      "source_rows": 2018,
+      "rejected": 10,
+      "rejected_by_rule": {
+        "invalid_latitude": 10
+      },
+      "malformed": 0,
+      "target_rows": 1406,
+      "collapsed": 602
+    },
+    "product_category_translations": {
+      "source_rows": 10,
+      "rejected": 0,
+      "rejected_by_rule": {},
+      "malformed": 0,
+      "target_rows": 10,
+      "collapsed": 0
+    },
+    "customers": {
+      "source_rows": 1010,
+      "rejected": 10,
+      "rejected_by_rule": {
+        "invalid_zip_prefix": 10
+      },
+      "malformed": 0,
+      "target_rows": 1000,
+      "collapsed": 0
+    },
+    "sellers": {
+      "source_rows": 43,
+      "rejected": 10,
+      "rejected_by_rule": {
+        "invalid_state": 10
+      },
+      "malformed": 0,
+      "target_rows": 33,
+      "collapsed": 0
+    },
+    "products": {
+      "source_rows": 343,
+      "rejected": 10,
+      "rejected_by_rule": {
+        "negative_weight": 10
+      },
+      "malformed": 0,
+      "target_rows": 333,
+      "collapsed": 0
+    },
+    "orders": {
+      "source_rows": 1060,
+      "rejected": 60,
+      "rejected_by_rule": {
+        "duplicate_key": 10,
+        "unknown_order_status": 10,
+        "malformed_row": 10,
+        "fk_violation:customer_id": 10,
+        "invalid_type:order_purchase_timestamp": 10,
+        "missing_required:customer_id": 10
+      },
+      "malformed": 10,
+      "target_rows": 1000,
+      "collapsed": 0
+    },
+    "order_items": {
+      "source_rows": 1249,
+      "rejected": 50,
+      "rejected_by_rule": {
+        "fk_violation:order_id": 10,
+        "duplicate_key": 10,
+        "malformed_row": 10,
+        "non_positive_price": 10,
+        "fk_violation:product_id": 10
+      },
+      "malformed": 10,
+      "target_rows": 1199,
+      "collapsed": 0,
+      "price_total": 313872.9,
+      "freight_total": 35608.1
+    },
+    "payments": {
+      "source_rows": 1083,
+      "rejected": 30,
+      "rejected_by_rule": {
+        "negative_payment": 10,
+        "fk_violation:order_id": 10,
+        "unknown_payment_type": 10
+      },
+      "malformed": 0,
+      "target_rows": 1053,
+      "collapsed": 0,
+      "payment_total": 349295.86
+    },
+    "reviews": {
+      "source_rows": 1010,
+      "rejected": 20,
+      "rejected_by_rule": {
+        "fk_violation:order_id": 10,
+        "invalid_review_score": 10
+      },
+      "malformed": 0,
+      "target_rows": 990,
+      "collapsed": 0
+    }
+  },
+  "defect_rows": {
+    "geolocation": [
+      {
+        "source_row_number": 404,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 449,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 456,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 524,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 1047,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 1088,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 1118,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 1184,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 1198,
+        "expected_rule": "invalid_latitude"
+      },
+      {
+        "source_row_number": 1978,
+        "expected_rule": "invalid_latitude"
+      }
+    ],
+    "product_category_translations": [],
+    "customers": [
+      {
+        "source_row_number": 1,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 25,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 93,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 427,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 590,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 662,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 736,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 791,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 890,
+        "expected_rule": "invalid_zip_prefix"
+      },
+      {
+        "source_row_number": 897,
+        "expected_rule": "invalid_zip_prefix"
+      }
+    ],
+    "sellers": [
+      {
+        "source_row_number": 1,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 6,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 8,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 13,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 17,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 19,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 24,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 27,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 29,
+        "expected_rule": "invalid_state"
+      },
+      {
+        "source_row_number": 32,
+        "expected_rule": "invalid_state"
+      }
+    ],
+    "products": [
+      {
+        "source_row_number": 2,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 7,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 24,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 61,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 126,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 130,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 144,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 161,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 165,
+        "expected_rule": "negative_weight"
+      },
+      {
+        "source_row_number": 249,
+        "expected_rule": "negative_weight"
+      }
+    ],
+    "orders": [
+      {
+        "source_row_number": 3,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 14,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 32,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 56,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 72,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 86,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 88,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 116,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 135,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 139,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 188,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 195,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 201,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 214,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 226,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 229,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 244,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 254,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 272,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 280,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 301,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 307,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 315,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 317,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 339,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 353,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 370,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 381,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 412,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 440,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 449,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 454,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 457,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 465,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 468,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 473,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 503,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 551,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 573,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 574,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 588,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 608,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 627,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 632,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 638,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 673,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 682,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 710,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 726,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 780,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 823,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 842,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 884,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      },
+      {
+        "source_row_number": 919,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 949,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 985,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 994,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 1001,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 1035,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 1048,
+        "expected_rule": "duplicate_key"
+      }
+    ],
+    "order_items": [
+      {
+        "source_row_number": 79,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 143,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 150,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 170,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 249,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 262,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 267,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 311,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 312,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 373,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 394,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 402,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 432,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 453,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 454,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 505,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 517,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 543,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 613,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 647,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 650,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 665,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 676,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 696,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 709,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 712,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 714,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 716,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 720,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 795,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 806,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 817,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 831,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 854,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 863,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 889,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 895,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 909,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 935,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 977,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 994,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 1032,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 1124,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 1163,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 1173,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 1176,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 1212,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 1220,
+        "expected_rule": "non_positive_price"
+      },
+      {
+        "source_row_number": 1228,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 1234,
+        "expected_rule": "fk_violation:order_id"
+      }
+    ],
+    "payments": [
+      {
+        "source_row_number": 12,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 30,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 65,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 81,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 123,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 158,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 168,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 193,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 198,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 212,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 288,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 290,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 295,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 378,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 409,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 423,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 434,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 527,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 595,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 598,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 602,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 690,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 716,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 763,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 765,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 858,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 952,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 971,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 977,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 1060,
+        "expected_rule": "unknown_payment_type"
+      }
+    ],
+    "reviews": [
+      {
+        "source_row_number": 46,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 99,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 107,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 217,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 260,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 300,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 338,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 451,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 457,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 540,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 592,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 594,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 598,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 638,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 656,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 729,
+        "expected_rule": "invalid_review_score"
+      },
+      {
+        "source_row_number": 791,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 795,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 921,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 937,
+        "expected_rule": "fk_violation:order_id"
+      }
+    ]
+  }
+}

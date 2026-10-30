@@ -1,0 +1,96 @@
+{
+  "mutations": 15,
+  "caught": 15,
+  "results": [
+    {
+      "mutation": "Stale guard removed: old versions overwrite new",
+      "file": "src/loaders/postgres_loader.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/integration/test_postgres_loader.py::test_older_version_is_counted_stale_and_not_applied"
+    },
+    {
+      "mutation": "Skip check looks at any earlier load, not the latest",
+      "file": "src/monitoring/audit.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_idempotency.py::test_restoring_a_file_to_its_earlier_content_is_a_change"
+    },
+    {
+      "mutation": "Contract changes no longer reprocess files",
+      "file": "src/monitoring/audit.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_idempotency.py::test_contract_change_reprocesses_an_unchanged_file"
+    },
+    {
+      "mutation": "Transaction commits even when a load fails midway",
+      "file": "src/pipelines/pipeline.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_retries.py::test_failure_in_a_late_table_rolls_back_every_earlier_table"
+    },
+    {
+      "mutation": "Empty batch deletes the whole snapshot",
+      "file": "src/pipelines/pipeline.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_empty_input.py::test_empty_batch_does_not_delete_a_loaded_snapshot"
+    },
+    {
+      "mutation": "Reconciliation ignores aggregate differences",
+      "file": "src/reporting/reconciliation.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_retries.py::test_reconciliation_catches_a_transformation_bug_and_publishes_nothing"
+    },
+    {
+      "mutation": "Rejected rows also load into the target",
+      "file": "src/validators/validator.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/integration/test_hotel_pipeline.py::test_dirty_data_rejects_exactly_the_labelled_rows_for_the_labelled_reasons"
+    },
+    {
+      "mutation": "Duplicate keys are not tracked across batches",
+      "file": "src/validators/duplicate_validator.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_duplicates.py::test_duplicate_primary_key_keeps_the_first_row_and_quarantines_the_second"
+    },
+    {
+      "mutation": "Hard references are not checked",
+      "file": "src/validators/referential_validator.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_malformed_input.py::test_invalid_reference_key_is_rejected"
+    },
+    {
+      "mutation": "NA treated as null everywhere, losing valid values",
+      "file": "src/validators/schema_validator.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/integration/test_hotel_pipeline.py::test_namibia_country_code_is_not_mistaken_for_missing"
+    },
+    {
+      "mutation": "Guest total drops unknown children incorrectly",
+      "file": "src/transformers/hotel_transformer.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/unit/test_transformation.py::test_unknown_children_count_as_zero_guests_but_stay_null"
+    },
+    {
+      "mutation": "Booking value ignores weekend nights",
+      "file": "src/transformers/hotel_transformer.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/integration/test_hotel_pipeline.py::test_clean_data_matches_the_answer_key"
+    },
+    {
+      "mutation": "Late-parent recovery never runs",
+      "file": "src/pipelines/pipeline.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_idempotency.py::test_late_arriving_parent_recovers_its_quarantined_child"
+    },
+    {
+      "mutation": "Row hash ignores content, so changes are skipped",
+      "file": "src/loaders/base.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_idempotency.py::test_changed_olist_file_updates_only_changed_rows_and_keeps_history"
+    },
+    {
+      "mutation": "Retries also repeat permanent failures",
+      "file": "src/pipelines/pipeline.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_retries.py::test_permanent_failure_is_not_retried"
+    }
+  ]
+}

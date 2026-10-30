@@ -30,18 +30,23 @@ class LoadCounts:
 
 
 def serialize_column(series: pd.Series, column_type: str) -> list[str | None]:
-    """Render values as PostgreSQL text input. Used for hashing and for COPY."""
+    """Render values as PostgreSQL text input. Used for hashing and for COPY.
+
+    This runs for every value of every row. The null mask is computed once per column
+    because calling pd.isna per value took 15% of a whole hotel run when profiled.
+    """
+    missing = series.isna().tolist()
     if column_type == "timestamp":
-        rendered = series.dt.strftime("%Y-%m-%dT%H:%M:%S").astype(object)
+        values = series.dt.strftime("%Y-%m-%dT%H:%M:%S").tolist()
     elif column_type == "date":
-        rendered = series.dt.strftime("%Y-%m-%d").astype(object)
+        values = series.dt.strftime("%Y-%m-%d").tolist()
     elif column_type == "integer":
-        return [None if pd.isna(value) else str(int(value)) for value in series]
+        return [None if gap else str(int(value)) for value, gap in zip(series.array, missing)]
     elif column_type in ("decimal", "float"):
-        return [None if pd.isna(value) else repr(float(value)) for value in series]
+        return [None if gap else repr(value) for value, gap in zip(series.astype("float64").tolist(), missing)]
     else:
-        rendered = series
-    return [None if pd.isna(value) else str(value) for value in rendered]
+        values = series.tolist()
+    return [None if gap else str(value) for value, gap in zip(values, missing)]
 
 
 def serialize_frame(frame: pd.DataFrame, columns: tuple[ColumnSpec, ...]) -> dict[str, list[str | None]]:

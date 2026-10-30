@@ -122,6 +122,9 @@ class Pipeline:
 
     def _check_input_files(self) -> None:
         """An --input file matching no table would otherwise be ignored without a word."""
+        if self.options.input_files and self.options.full_refresh:
+            # Dropping every table and reloading one file would empty the dataset.
+            raise ConfigurationError("--full-refresh rebuilds whole datasets, so it cannot be used with --input.")
         for path in self.options.input_files:
             if not any(path.match(table.source.pattern) for table in self.contract.tables):
                 raise ConfigurationError(f"{path.name} matches no table of {self.contract.dataset}")
@@ -165,9 +168,7 @@ class Pipeline:
         result = RunResult(self.run_id, self.contract.dataset, status, self.options.mode, self.metrics,
                            attempts, failure, self.reconciliation)
         if self.options.write_outputs:
-            result.report_path = self._write_report(result, started_at)
-            if status is not RunStatus.FAILED and not self.options.dry_run:
-                self._write_rejected_csv()
+            self._write_outputs(result, started_at)
         self.log.info(
             "Run finished: %s", status,
             extra={"stage": "end", "status": str(status), "input_count": self.metrics.total("input"),
@@ -207,6 +208,7 @@ class Pipeline:
         with self.engine.connect() as conn:
             transaction = conn.begin()
             try:
+                self._check_input_files()
                 if self.options.full_refresh:
                     self.log.warning("Full refresh: dropping and rebuilding %s", self.contract.db_schema)
                     drop_target_schema(conn, self.contract)
@@ -214,8 +216,8 @@ class Pipeline:
                         text("DELETE FROM ops.processed_files WHERE dataset_name = :d"),
                         {"d": self.contract.dataset},
                     )
+                    self.audit.supersede_rejections(conn)
                 ensure_target_schema(conn, self.contract)
-                self._check_input_files()
 
                 any_processed = False
                 for table in self.contract.tables:
@@ -236,8 +238,6 @@ class Pipeline:
                     transaction.rollback()
                 else:
                     transaction.commit()
-                    if self.options.write_outputs:
-                        self._write_processed_samples()
             except BaseException:
                 if transaction.is_active:
                     transaction.rollback()
@@ -259,6 +259,10 @@ class Pipeline:
             metrics.files_skipped.append(source.name)
             self.log.info("%s unchanged, skipped", source.name, extra=extra)
             return False
+
+        if table.duplicates.policy is DuplicatePolicy.COLLAPSE:
+            self._require_single_source(conn, table, source.name)
+        self.audit.supersede_rejections(conn, table.name, source.name)
 
         metrics.schema_notes.append(
             {"file": source.name, **check_columns(extractor.columns(), table, source.name)}
@@ -291,6 +295,18 @@ class Pipeline:
             self.log.warning("%s has a header but no rows", source.name, extra=extra)
         self.log.info("%s processed: %d rows", source.name, rows, extra={**extra, "stage": "load", "input_count": rows})
         return True
+
+    def _require_single_source(self, conn: Connection, table: TableContract, source_name: str) -> None:
+        """A collapsed row's count describes one file, and could not be correct across several."""
+        other = conn.execute(
+            text(f"SELECT {SOURCE_FILE} FROM {self.contract.db_schema}.{table.name} WHERE {SOURCE_FILE} <> :n LIMIT 1"),
+            {"n": source_name},
+        ).scalar()
+        if other:
+            raise ConfigurationError(
+                f"{table.name} collapses duplicates, so it supports one source file, but it already holds rows "
+                f"from {other} and was given {source_name}. Use --full-refresh to rebuild it from one file."
+            )
 
     def _process_batch(self, conn: Connection, table: TableContract, batch: RawBatch, validator: RecordValidator,
                        loader: PostgresLoader, metrics: TableMetrics) -> None:
@@ -336,7 +352,8 @@ class Pipeline:
         This is how late-arriving data recovers without touching any source file.
         """
         rows = conn.execute(
-            text("SELECT rejection_id, target_table, source_file, source_row_number, original_record, rejection_reason "
+            text("SELECT rejection_id, target_table, source_file, source_row_number, original_record, rejection_reason, "
+                 "last_seen_run_id "
                  "FROM ops.rejected_records WHERE dataset_name = :d AND resolved_at IS NULL "
                  "ORDER BY target_table, source_file, source_row_number"),
             {"d": self.contract.dataset},
@@ -358,25 +375,51 @@ class Pipeline:
         frame = pd.DataFrame([r["original_record"] for r in rows], dtype=object)
         frame[SOURCE_ROW] = pd.array([r["source_row_number"] for r in rows], dtype="int64")
         result = validator.validate(RawBatch(frame))
-        recovered = result.valid[SOURCE_ROW].tolist()
-        if not recovered:
+        if result.valid.empty:
             return
 
+        # A row that has since arrived another way is newer than this rejection, so it must win.
+        keys = ", ".join(table.primary_key)
+        loaded = {tuple(row) for row in conn.execute(text(f"SELECT {keys} FROM {self.contract.db_schema}.{table.name}"))}
+        candidates = list(zip(*(result.valid[column].tolist() for column in table.primary_key)))
+        already_loaded = pd.Series([key in loaded for key in candidates], index=result.valid.index, dtype=bool)
+
+        by_row = {r["source_row_number"]: r for r in rows}
+        superseded = result.valid.loc[already_loaded, SOURCE_ROW].tolist()
+        self._close_rejections(conn, [by_row[row]["rejection_id"] for row in superseded], "superseded")
+
+        to_load = result.valid.loc[~already_loaded]
+        recovered = to_load[SOURCE_ROW].tolist()
+        if not recovered:
+            return
         loader = PostgresLoader(self.contract.db_schema, self.contract.dataset, self.run_id, self.options.stage_method)
         loader.prepare(conn, table)
-        transformed = self.transformer.transform(table, result.valid)
         metrics = self.metrics.table(table.name)
-        metrics.load.add(loader.load_batch(conn, table, transformed))
-        metrics.reprocessed += len(recovered)
-
-        by_row = {r["source_row_number"]: r["rejection_id"] for r in rows}
-        conn.execute(
-            text("UPDATE ops.rejected_records SET resolved_at = now(), resolved_by_run_id = :run "
-                 "WHERE rejection_id = ANY(:ids)"),
-            {"run": self.run_id, "ids": [by_row[row] for row in recovered]},
-        )
+        metrics.load.add(loader.load_batch(conn, table, self.transformer.transform(table, to_load.reset_index(drop=True))))
+        self._close_rejections(conn, [by_row[row]["rejection_id"] for row in recovered], "recovered")
+        self._count_recovered(metrics, [by_row[row] for row in recovered])
         self.log.info("Recovered %d quarantined %s rows", len(recovered), table.name,
                       extra={"stage": "reprocess", "table": table.name})
+
+    def _close_rejections(self, conn: Connection, ids: list[str], resolution: str) -> None:
+        conn.execute(
+            text("UPDATE ops.rejected_records SET resolved_at = now(), resolved_by_run_id = :run, resolution = :how "
+                 "WHERE rejection_id = ANY(:ids)"),
+            {"run": self.run_id, "how": resolution, "ids": ids},
+        )
+
+    def _count_recovered(self, metrics: TableMetrics, rows: list) -> None:
+        """A row rejected earlier in this same run ends up accepted, not rejected and also loaded."""
+        same_run = [row for row in rows if row["last_seen_run_id"] == self.run_id]
+        metrics.reprocessed += len(rows) - len(same_run)
+        metrics.recovered_same_run += len(same_run)
+        metrics.rejected -= len(same_run)
+        metrics.valid += len(same_run)
+        for row in same_run:
+            metrics.rule_failures.subtract(row["rejection_reason"].split("; "))
+        metrics.rule_failures += Counter()  # drop the counts that reached zero
+        closed = {row["rejection_id"] for row in same_run}
+        self.rejected_rows = [row for row in self.rejected_rows if row["rejection_id"] not in closed]
 
     def _refresh_derived_tables(self, conn: Connection) -> None:
         with self.metrics.timed("loading"):
@@ -385,6 +428,19 @@ class Pipeline:
                     conn.execute(text(statement))
 
     # ---- outputs ----------------------------------------------------------------------
+
+    def _write_outputs(self, result: RunResult, started_at: datetime) -> None:
+        """Files for people to read. The run's outcome is already decided and recorded, so
+        a problem here, such as a CSV open in another program, must not change it."""
+        try:
+            result.report_path = self._write_report(result, started_at)
+            published = result.succeeded and not self.options.dry_run
+            if published:
+                self._write_rejected_csv()
+            if published and result.status is not RunStatus.SKIPPED:
+                self._write_processed_samples()
+        except (OSError, SQLAlchemyError) as exc:
+            self.log.warning("Could not write run outputs: %s", _short_error(exc))
 
     def _output_dir(self, base: Path) -> Path:
         directory = base / self.contract.dataset
@@ -424,6 +480,11 @@ class Pipeline:
         stamp = started_at.strftime("%Y%m%dT%H%M%SZ")
         path = directory / f"{result.dataset}_{stamp}_{result.run_id}.json"
         path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        loaded_files = any(table.files_processed for table in metrics.tables.values())
+        if result.succeeded and loaded_files and result.mode is not RunMode.DRY_RUN:
+            # Kept apart by origin, so a run over samples cannot replace evidence from real data.
+            latest = self.settings.paths.reports_dir / f"reconciliation_{result.dataset}_{self._data_origin()}.json"
+            latest.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
         return path
 
     def _write_rejected_csv(self) -> None:

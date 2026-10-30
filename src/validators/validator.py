@@ -35,9 +35,9 @@ def _storable(value: object) -> object:
     return None if value is None or pd.isna(value) else value
 
 
-def rejection_id(dataset: str, table: str, checksum: str, row_number: int) -> str:
+def rejection_id(dataset: str, table: str, source_file: str, checksum: str, row_number: int) -> str:
     """Deterministic, so replaying a file cannot quarantine the same record twice."""
-    return hashlib.sha256(f"{dataset}|{table}|{checksum}|{row_number}".encode("utf-8")).hexdigest()
+    return hashlib.sha256(f"{dataset}|{table}|{source_file}|{checksum}|{row_number}".encode("utf-8")).hexdigest()
 
 
 class RecordValidator:
@@ -60,7 +60,7 @@ class RecordValidator:
             failures = by_position[position]
             row_number = int(typed[SOURCE_ROW].iloc[position])
             records.append({
-                "rejection_id": rejection_id(self.dataset, self.table.name, self.source.checksum, row_number),
+                "rejection_id": rejection_id(self.dataset, self.table.name, self.source.name, self.source.checksum, row_number),
                 "target_table": self.table.name,
                 "source_file": self.source.name,
                 "source_row_number": row_number,
@@ -75,7 +75,7 @@ class RecordValidator:
 
     def rejected_from_malformed(self, malformed: list[MalformedRow]) -> list[dict]:
         return [{
-            "rejection_id": rejection_id(self.dataset, self.table.name, self.source.checksum, row.source_row_number),
+            "rejection_id": rejection_id(self.dataset, self.table.name, self.source.name, self.source.checksum, row.source_row_number),
             "target_table": self.table.name,
             "source_file": self.source.name,
             "source_row_number": row.source_row_number,

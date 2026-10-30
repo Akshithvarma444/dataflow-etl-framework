@@ -1,8 +1,12 @@
 """Source-to-target reconciliation, run inside the load transaction before it commits.
 
-An unexplained difference raises, which rolls the load back: data that does not reconcile
-is never published. Source totals come from raw text before validation, so a bug in
-transformation or loading cannot hide by affecting both sides.
+A difference raises, which rolls the load back: data that does not reconcile is never
+published. Source totals come from raw text before validation, so a bug in transformation or
+loading cannot hide by affecting both sides.
+
+A total can only be compared when the target rows attributed to this run's files are exactly
+the rows this run accepted. When they are not, for example after a partial re-delivery, the
+result is "not_comparable" with the reason. It is not a pass, and no difference is excused.
 """
 
 from sqlalchemy import Connection, text
@@ -13,19 +17,19 @@ from src.core.exceptions import ReconciliationError
 from src.monitoring.metrics import RunMetrics, TableMetrics
 
 MATCH = "match"
-EXPLAINED = "explained"
+NOT_COMPARABLE = "not_comparable"
 MISMATCH = "mismatch"
 
 
-def _aggregate_explanation(metrics: TableMetrics) -> str | None:
-    """Why a per-file comparison can legitimately differ: rows now attributed elsewhere."""
+def _not_comparable_reason(metrics: TableMetrics, attributed_rows: int) -> str | None:
+    """Why source and target totals cover different rows, or None if they cover the same ones."""
     reasons = []
-    if metrics.load.skipped:
-        reasons.append(f"{metrics.load.skipped} rows were already present and kept their earlier source_file")
+    if attributed_rows != metrics.valid:
+        reasons.append(f"{attributed_rows} target rows are attributed to these files but {metrics.valid} rows were accepted")
     if metrics.load.stale:
         reasons.append(f"{metrics.load.stale} older rows were not applied")
-    if metrics.reprocessed:
-        reasons.append(f"{metrics.reprocessed} quarantined rows were recovered from an earlier file")
+    if metrics.reprocessed or metrics.recovered_same_run:
+        reasons.append(f"{metrics.reprocessed + metrics.recovered_same_run} rows were recovered from quarantine")
     return "; ".join(reasons) or None
 
 
@@ -46,7 +50,7 @@ def _reconcile_table(conn: Connection, schema: str, table: TableContract, metric
         "flagged_duplicates": metrics.duplicates_flagged,
         "duplicate_key_rows": metrics.duplicate_keys,
         "missing_key_rows": metrics.missing_keys,
-        "recovered_from_quarantine": metrics.reprocessed,
+        "recovered_from_quarantine": metrics.reprocessed + metrics.recovered_same_run,
         "inserted": metrics.load.inserted,
         "updated": metrics.load.updated,
         "unchanged": metrics.load.skipped,
@@ -69,6 +73,10 @@ def _reconcile_table(conn: Connection, schema: str, table: TableContract, metric
 
     if not metrics.files_processed:
         return report
+    attributed_rows = conn.execute(
+        text(f"SELECT count(*) FROM {target} WHERE {SOURCE_FILE} = ANY(:files)"), {"files": metrics.files_processed}
+    ).scalar_one()
+    reason = _not_comparable_reason(metrics, attributed_rows)
     for aggregate in table.aggregates:
         target_value = conn.execute(
             text(f"SELECT coalesce({aggregate.target_expression}, 0)::float8 FROM {target} "
@@ -77,23 +85,22 @@ def _reconcile_table(conn: Connection, schema: str, table: TableContract, metric
         ).scalar_one()
         source_value = metrics.aggregate_total(aggregate.name)
         difference = target_value - source_value
-        if abs(difference) <= AGGREGATE_TOLERANCE:
-            status, explanation = MATCH, None
+        if reason:
+            status = NOT_COMPARABLE
         else:
-            explanation = _aggregate_explanation(metrics)
-            status = EXPLAINED if explanation else MISMATCH
+            status = MATCH if abs(difference) <= AGGREGATE_TOLERANCE else MISMATCH
         report["aggregates"].append({
             "name": aggregate.name,
             "source_valid_total": round(source_value, 2),
             "target_total": round(target_value, 2),
             "difference": round(difference, 2),
             "status": status,
-            "explanation": explanation,
+            "reason": reason,
         })
         if status == MISMATCH:
             raise ReconciliationError(
                 f"{table.name}.{aggregate.name}: source {source_value:.2f}, target {target_value:.2f}, "
-                "and nothing explains the difference."
+                "over the same rows."
             )
     return report
 

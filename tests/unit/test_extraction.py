@@ -152,6 +152,15 @@ def test_newline_delimited_json_quarantines_only_the_bad_line(tmp_path: Path) ->
     assert batch.malformed[0].line_number == 2
 
 
+def test_stray_quote_swallowing_many_lines_fails_instead_of_losing_rows(tmp_path: Path) -> None:
+    path = tmp_path / "a.csv"
+    rows = "".join(f"{i},b\n" for i in range(150))
+    path.write_bytes(f'id,x\n1,"oops\n{rows}'.encode("utf-8"))
+
+    with pytest.raises(ExtractionError, match="unterminated quote"):
+        read_all(path)
+
+
 def test_invalid_json_array_fails_the_file(tmp_path: Path) -> None:
     path = tmp_path / "a.json"
     path.write_text('[{"id": 1},', encoding="utf-8")

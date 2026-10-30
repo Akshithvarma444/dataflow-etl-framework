@@ -8,7 +8,7 @@ load's connection, because they must commit or roll back with the data they desc
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Connection, Engine, insert, select, update
+from sqlalchemy import Connection, Engine, func, insert, select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from src.core.constants import RunStatus
@@ -77,9 +77,24 @@ class AuditLog:
         )
         conn.execute(statement.on_conflict_do_update(
             index_elements=["dataset_name", "source_file", "checksum", "contract_hash"],
-            set_={"run_id": self.run_id, "row_count": rows,
-                  "processed_at": datetime.now(UTC)},
+            # The database clock throughout, because the skip check orders by this column.
+            set_={"run_id": self.run_id, "row_count": rows, "processed_at": func.clock_timestamp()},
         ))
+
+    def supersede_rejections(self, conn: Connection, table_name: str | None = None, source_file: str | None = None) -> None:
+        """Close open rejections that a new version of their file replaces.
+
+        Called before a file is processed. Anything still wrong is rejected again, which
+        reopens it, so what stays closed is what the new version fixed or removed. Without
+        this, a stale rejection could later be recovered and overwrite the correction.
+        ``None`` for both means the whole dataset, for a full refresh.
+        """
+        statement = update(RejectedRecord).where(
+            RejectedRecord.dataset_name == self.dataset, RejectedRecord.resolved_at.is_(None))
+        if table_name is not None:
+            statement = statement.where(RejectedRecord.target_table == table_name,
+                                        RejectedRecord.source_file == source_file)
+        conn.execute(statement.values(resolved_at=func.now(), resolved_by_run_id=self.run_id, resolution="superseded"))
 
     def write_rejections(self, conn: Connection, records: list[dict]) -> None:
         if not records:
@@ -92,7 +107,7 @@ class AuditLog:
                       "rejection_reason": statement.excluded.rejection_reason,
                       "rule_failures": statement.excluded.rule_failures,
                       # Rejected again, so it is open again, for example after a full refresh.
-                      "resolved_at": None, "resolved_by_run_id": None},
+                      "resolved_at": None, "resolved_by_run_id": None, "resolution": None},
             ),
             [{**record, "run_id": self.run_id, "last_seen_run_id": self.run_id, "dataset_name": self.dataset}
              for record in records],

@@ -155,6 +155,18 @@ def test_report_and_metrics_are_written(run_hotel, db: Engine, generated) -> Non
                   r=result.run_id) == answers["dirty"]["hotel_bookings"]["rejected"]
 
 
+def test_latest_reconciliation_file_is_kept_per_origin_and_not_replaced_by_a_skip(run_hotel, settings: Settings, generated) -> None:
+    root, answers = generated
+    latest = settings.paths.reports_dir / "reconciliation_hotel_bookings_synthetic.json"
+
+    run_hotel(root / "dirty")
+    run_hotel(root / "dirty")  # unchanged, so skipped
+
+    report = json.loads(latest.read_text(encoding="utf-8"))
+    assert report["status"] == "success_with_rejects"
+    assert report["totals"]["input"] == answers["dirty"]["hotel_bookings"]["source_rows"]
+
+
 def test_rejected_csv_and_sample_outputs_are_written(run_hotel, settings: Settings, generated) -> None:
     root, _ = generated
 

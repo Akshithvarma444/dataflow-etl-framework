@@ -152,7 +152,7 @@ def test_restoring_a_file_to_its_earlier_content_is_a_change(run_olist, db: Engi
 
 
 def test_contract_change_reprocesses_an_unchanged_file(settings: Settings, hotel_contract: DatasetContract, db: Engine, tmp_path: Path) -> None:
-    write_hotel(tmp_path, [hotel_row(adr="600.00")])
+    write_hotel(tmp_path, [hotel_row(adr="600.00"), hotel_row(), hotel_row()])
     assert Pipeline(settings, hotel_contract, db, RunOptions(source_dir=tmp_path)).run().status is RunStatus.SUCCESS
 
     table = hotel_contract.tables[0]
@@ -166,27 +166,29 @@ def test_contract_change_reprocesses_an_unchanged_file(settings: Settings, hotel
     assert result.metrics.total("rejected") == 1
 
 
-def test_corrected_row_in_a_rerun_resolves_nothing_silently(run_hotel, db: Engine, tmp_path: Path) -> None:
-    """The old rejection stays on record as history of what was received."""
+def test_corrected_row_closes_its_rejection_and_keeps_it_on_record(run_hotel, db: Engine, tmp_path: Path) -> None:
     write_hotel(tmp_path, [hotel_row(adr="-1")])
     run_hotel(tmp_path)
 
     write_hotel(tmp_path, [hotel_row(adr="10.00")])
-    run_hotel(tmp_path)
+    fixed = run_hotel(tmp_path)
 
     assert scalar(db, "SELECT count(*) FROM hotel.hotel_bookings") == 1
-    assert scalar(db, "SELECT count(*) FROM ops.rejected_records") == 1
+    rejection = rows_of(db, "SELECT * FROM ops.rejected_records")[0]
+    assert rejection["resolution"] == "superseded"
+    assert rejection["resolved_by_run_id"] == fixed.run_id
+    assert rejection["original_record"]["adr"] == "-1"
 
 
 def test_hotel_snapshot_with_fewer_rows_removes_and_archives_the_rest(run_hotel, db: Engine, tmp_path: Path) -> None:
-    write_hotel(tmp_path, [hotel_row(adr="1.00"), hotel_row(adr="2.00"), hotel_row(adr="3.00")])
+    write_hotel(tmp_path, [hotel_row(adr=f"{n}.00") for n in range(1, 6)])
     run_hotel(tmp_path)
 
-    write_hotel(tmp_path, [hotel_row(adr="1.00")])
+    write_hotel(tmp_path, [hotel_row(adr=f"{n}.00") for n in range(1, 4)])
     result = run_hotel(tmp_path)
 
     assert result.metrics.load_total("deleted") == 2
-    assert scalar(db, "SELECT count(*) FROM hotel.hotel_bookings") == 1
+    assert scalar(db, "SELECT count(*) FROM hotel.hotel_bookings") == 3
     assert scalar(db, "SELECT count(*) FROM ops.record_history WHERE change_type = 'delete'") == 2
 
 
@@ -237,6 +239,7 @@ def test_late_arriving_parent_recovers_its_quarantined_child(run_olist, db: Engi
     resolved = rows_of(db, "SELECT resolved_at, resolved_by_run_id FROM ops.rejected_records")[0]
     assert resolved["resolved_at"] is not None
     assert resolved["resolved_by_run_id"] == second.run_id
+    assert scalar(db, "SELECT resolution FROM ops.rejected_records") == "recovered"
     assert scalar(db, "SELECT item_count FROM olist.order_summary WHERE order_id = 'late_order'") == 1
 
 

@@ -10,6 +10,9 @@ from src.core.exceptions import EmptySourceError, ExtractionError, SchemaDriftEr
 from src.extractors.base import BaseExtractor, MalformedRow, RawBatch
 
 MAX_FIELD_BYTES = 10 * 1024 * 1024
+# A real record can contain newlines, but a stray unterminated quote swallows every line up to
+# the next quote into one field that can look valid, losing those rows without any error.
+MAX_LINES_PER_RECORD = 100
 
 
 def make_batch(columns: list[str], rows: list[list[str]], numbers: list[int], malformed: list[MalformedRow]) -> RawBatch:
@@ -46,7 +49,14 @@ class CsvExtractor(BaseExtractor):
             reader = csv.reader(handle)
             next(reader)
             try:
+                previous_line = reader.line_num
                 for fields in reader:
+                    if reader.line_num - previous_line > MAX_LINES_PER_RECORD:
+                        raise ExtractionError(
+                            f"{self.source.name}: the record starting after line {previous_line} spans "
+                            f"{reader.line_num - previous_line} lines; probably an unterminated quote."
+                        )
+                    previous_line = reader.line_num
                     if not fields:  # a blank line is not a record
                         continue
                     number += 1

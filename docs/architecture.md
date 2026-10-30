@@ -1,9 +1,5 @@
 # Architecture
 
-Status: the design below was finalized in Phase 1, before the real data was profiled.
-Facts about the datasets marked *(to verify)* are expectations that Phase 2 confirms or
-corrects against the actual files. Target columns are finalized from that profile.
-
 ## Pipeline flow
 
 The same engine runs every dataset. A dataset is described by a YAML contract plus an
@@ -30,7 +26,7 @@ flowchart TD
 |---|---|---|---|
 | Extraction | `src/extractors` | CSV and JSON readers, checksums, row numbering | File names in YAML |
 | Validation | `src/validators` | Rule engine and check types | Rules in YAML |
-| Transformation | `src/transformers` | Base class, row hash, IDs | `olist_transformer.py`, `hotel_transformer.py` |
+| Transformation | `src/transformers` | Base class and dispatch | `olist_transformer.py`, `hotel_transformer.py` |
 | Load | `src/loaders` | Upsert, history capture, counts | Keys and strategy in YAML |
 | Observability | `src/monitoring` | Logging, run records, metrics | None |
 | Reconciliation | `src/reporting` | Report engine | Aggregates to compare in YAML |
@@ -40,17 +36,21 @@ flowchart TD
 1. Create a `pipeline_runs` row (`running`) with a new UUID, committed immediately so the
    record survives any later failure.
 2. Take a PostgreSQL advisory lock for the dataset. A concurrent run fails fast. Any older
-   run still marked `running` must have died, so it is marked `abandoned`.
+   run still marked `running` must have died, because it would otherwise hold the lock, so it
+   is marked `abandoned`.
 3. For each source file in foreign-key order, compute its checksum and look it up in
    `processed_files`. An unchanged file already loaded under the same contract is skipped.
 4. Extract chunks, validate, and split into valid and rejected. References are checked
    against valid parents from this run plus parents already in the database, so a skipped
    parent file still satisfies its children.
-5. Transform valid rows, then open **one transaction** covering target tables, history,
-   quarantine rows, and `processed_files`. Any error rolls all of it back, so a file can
-   never be recorded as processed when its data was not published.
-6. Reconcile, write metrics and reports, and set the final run status in a separate
-   transaction, so a failure reason is recorded even when the load rolled back.
+5. Transform valid rows and publish them. Target tables, history, quarantine rows, and
+   `processed_files` all share **one transaction**. Any error rolls all of it back, so a file
+   can never be recorded as processed when its data was not published.
+6. Retry quarantined rows that were rejected only for a missing parent, since it may now exist.
+7. Rebuild derived tables, then reconcile **inside the transaction**. An unexplained difference
+   raises, so data that does not reconcile is never published.
+8. Commit. Then write metrics and reports and set the final run status in a separate transaction,
+   so a failure reason is recorded even when the load rolled back.
 
 ## Entity relationships
 
@@ -107,7 +107,7 @@ erDiagram
 ```
 
 Solid lines are enforced foreign keys. Dotted lines are soft references, checked and reported
-as warnings, because the source is expected to violate them legitimately *(to verify)*.
+as warnings, because the real data violates them legitimately (see docs/data_sources.md).
 
 ```mermaid
 erDiagram
@@ -137,6 +137,7 @@ erDiagram
     rejected_records { text rejection_id PK
                        uuid run_id FK
                        text dataset_name
+                       text target_table
                        text source_file
                        bigint source_row_number
                        jsonb original_record
@@ -158,9 +159,9 @@ erDiagram
 |---|---|
 | `record_id` (PK) | SHA-256 of logical source name and row number. An ingestion ID, not a business key. |
 | `record_fingerprint` | SHA-256 of the source column values, used to detect exact duplicates. |
-| `is_exact_duplicate`, `duplicate_group_size` | Duplicate flag, not a rejection (see design decisions). |
-| Source columns | As found in the file, typed. Finalized in Phase 2. |
-| `total_nights`, `total_guests`, `arrival_date`, `estimated_booking_value` | Derived and documented. |
+| `duplicate_occurrence` | 1 for the first time a fingerprint is seen in a file, then 2, 3... A flag, not a rejection (see design decisions). |
+| Source columns | All 32, typed, with their source names. See docs/data_dictionary.md. |
+| `arrival_date`, `booking_date`, `total_nights`, `total_guests`, `meal_plan`, `estimated_booking_value`, `realized_booking_value` | Derived and documented. |
 
 ## Runtime topology
 

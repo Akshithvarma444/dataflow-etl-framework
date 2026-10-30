@@ -95,6 +95,9 @@ class RuleSpec(_Strict):
 class LoadSpec(_Strict):
     strategy: LoadStrategy = LoadStrategy.UPSERT
     version_column: str | None = None
+    # replace_source only: a new version removing more than this share of a file's rows looks
+    # like a truncated delivery, so it fails the run rather than deleting them.
+    max_delete_fraction: float = Field(default=0.5, ge=0, le=1)
 
 
 class AggregateSpec(_Strict):

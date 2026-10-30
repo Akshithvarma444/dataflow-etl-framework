@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 INT_MAX = 2_147_483_647
 NUMERIC_MAX = 1e12  # the limit of numeric(14, 2)
+DECIMAL_PLACES = 2
 DEFAULT_TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 
@@ -53,7 +54,9 @@ def _coerce_number(text: pd.Series, column: ColumnSpec, issues: IssueCollector) 
         valid = finite & (numbers.abs().to_numpy() <= INT_MAX)
         valid &= np.where(finite, np.floor(numbers.fillna(0).to_numpy()) == numbers.fillna(0).to_numpy(), False)
     elif column.type == "decimal":
-        valid = finite & (numbers.abs().to_numpy() < NUMERIC_MAX)
+        # numeric(14, 2) would round extra decimals without any error, so they are rejected.
+        exact = np.isclose(numbers.to_numpy(), np.round(numbers.to_numpy(), DECIMAL_PLACES), rtol=0, atol=1e-9)
+        valid = finite & (numbers.abs().to_numpy() < NUMERIC_MAX) & exact
     else:
         valid = finite
 

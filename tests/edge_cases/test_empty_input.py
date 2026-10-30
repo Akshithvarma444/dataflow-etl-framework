@@ -38,6 +38,7 @@ def test_empty_batch_does_not_delete_a_loaded_snapshot(run_hotel, db: Engine, tm
     (tmp_path / "hotel_bookings.csv").write_text(",".join(HOTEL_ROW) + "\n", encoding="utf-8")
     result = run_hotel(tmp_path)
 
+    assert result.status is RunStatus.SUCCESS
     assert result.metrics.load_total("deleted") == 0
     assert scalar(db, "SELECT count(*) FROM hotel.hotel_bookings") == 2
 

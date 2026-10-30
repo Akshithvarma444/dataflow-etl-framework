@@ -88,6 +88,8 @@ class RejectedRecord(OpsBase):
     rejected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     resolved_by_run_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    # "recovered": the record loaded later. "superseded": a newer version of its file replaced it.
+    resolution: Mapped[str | None] = mapped_column(Text)
 
 
 class RecordHistory(OpsBase):

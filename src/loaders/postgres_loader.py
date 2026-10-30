@@ -13,6 +13,7 @@ from sqlalchemy.exc import DBAPIError
 
 from src.core.constants import DQ_WARNINGS, LoadStrategy, OPS_SCHEMA, ROW_HASH, SOURCE_FILE, SOURCE_ROW
 from src.core.contract import TableContract
+from src.core.exceptions import LoadError
 from src.database.connection import classify_database_error
 from src.loaders.base import BaseLoader, LoadCounts, row_hashes, serialize_frame
 
@@ -70,6 +71,11 @@ class PostgresLoader(BaseLoader):
         version = table.load.version_column
         fresh = f"(s.{version} IS NULL OR t.{version} IS NULL OR s.{version} >= t.{version})" if version else "TRUE"
 
+        # Counted, not inferred as a remainder, so the reconciliation check on these counts means something.
+        unchanged = conn.execute(text(
+            f"SELECT count(*) FROM {stage} s JOIN {target} t ON {join} WHERE s.{ROW_HASH} = t.{ROW_HASH}"
+        )).scalar_one()
+
         stale = 0
         if version:
             stale = conn.execute(text(
@@ -100,13 +106,7 @@ class PostgresLoader(BaseLoader):
             f"WHERE {guard} RETURNING (xmax = 0) AS inserted"
         ))
         outcome = Counter(row.inserted for row in result)
-        total = conn.execute(text(f"SELECT count(*) FROM {stage}")).scalar_one()
-        return LoadCounts(
-            inserted=outcome[True],
-            updated=outcome[False],
-            stale=stale,
-            skipped=total - outcome[True] - outcome[False] - stale,
-        )
+        return LoadCounts(inserted=outcome[True], updated=outcome[False], stale=stale, skipped=unchanged)
 
     def load_batch(self, conn: Connection, table: TableContract, frame: pd.DataFrame) -> LoadCounts:
         if frame.empty:
@@ -114,7 +114,9 @@ class PostgresLoader(BaseLoader):
         serialized = serialize_frame(frame, table.all_columns)
         # A duplicate count is settled at the end of a file, so it must not affect the hash.
         exclude = {table.duplicates.count_column} if table.duplicates.count_column else set()
-        hashes = row_hashes(serialized, exclude)
+        warnings = [None if pd.isna(value) else value for value in frame[DQ_WARNINGS]]
+        # Warnings count as content: a changed rule must refresh the flags on an unchanged row.
+        hashes = row_hashes({**serialized, DQ_WARNINGS: warnings}, exclude)
         run = str(self.run_id)
         rows = list(zip(
             *serialized.values(),
@@ -123,7 +125,7 @@ class PostgresLoader(BaseLoader):
             hashes,
             frame[SOURCE_FILE].tolist(),
             [str(value) for value in frame[SOURCE_ROW]],
-            [None if pd.isna(value) else value for value in frame[DQ_WARNINGS]],
+            warnings,
         ))
         columns = [*serialized.keys(), *AUDIT_INSERT]
         try:
@@ -141,6 +143,13 @@ class PostgresLoader(BaseLoader):
         target, seen = self._target(table), self._seen(table)
         match = " AND ".join(f"s.{key} = t.{key}" for key in table.primary_key)
         gone = f"t.{SOURCE_FILE} = :file AND NOT EXISTS (SELECT 1 FROM {seen} s WHERE {match})"
+        existing = conn.execute(text(f"SELECT count(*) FROM {target} t WHERE t.{SOURCE_FILE} = :file"), {"file": source_file}).scalar_one()
+        removing = conn.execute(text(f"SELECT count(*) FROM {target} t WHERE {gone}"), {"file": source_file}).scalar_one()
+        if existing and removing / existing > table.load.max_delete_fraction:
+            raise LoadError(
+                f"{source_file} would remove {removing} of its {existing} loaded rows, which looks like a truncated "
+                "or mostly invalid delivery. Nothing was changed. If it is intended, use --full-refresh."
+            )
         key_json = ", ".join(f"'{key}', t.{key}" for key in table.primary_key)
         conn.execute(text(
             f"INSERT INTO {OPS_SCHEMA}.record_history "

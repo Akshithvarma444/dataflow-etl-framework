@@ -253,28 +253,32 @@ def _generate_olist(contract: DatasetContract, root: Path, orders: int, seed: in
     cities = sorted({faker.city().lower() for _ in range(40)} | {"sao paulo", "são paulo"})
     states = ["SP", "RJ", "MG", "RS", "PR", "BA", "SC"]
 
+    def pick(pool: list[str]) -> str:
+        # rng.choice would convert the whole list to an array on every call.
+        return pool[int(rng.integers(0, len(pool)))]
+
     zip_pool = [f"{int(z):05d}" for z in rng.choice(np.arange(1000, 99999), size=max(20, orders // 5), replace=False)]
     unknown_zip = "99999"
 
     # Geolocation: no key, many exact copies, and a coordinate that is valid but not in Brazil.
     geolocation = []
     for _ in range(int(orders * 1.4) + 5):
-        geolocation.append([str(rng.choice(zip_pool)), repr(round(float(rng.uniform(-33, 5)), 8)),
-                            repr(round(float(rng.uniform(-73, -35)), 8)), str(rng.choice(cities)), str(rng.choice(states))])
+        geolocation.append([pick(zip_pool), repr(round(float(rng.uniform(-33, 5)), 8)),
+                            repr(round(float(rng.uniform(-73, -35)), 8)), pick(cities), pick(states)])
     geolocation += [list(geolocation[int(i)]) for i in rng.integers(0, len(geolocation), size=int(orders * 0.6) + 2)]
     geolocation.append([zip_pool[0], "45.06593318", "-101.46676645", cities[0], "SP"])
 
     translations = [[pt, en] for pt, en in CATEGORIES.items()]
     categories = list(CATEGORIES) + [UNTRANSLATED_CATEGORY]
 
-    sellers = [[_stable_id("seller", i), str(rng.choice(zip_pool)), str(rng.choice(cities)), str(rng.choice(states))]
+    sellers = [[_stable_id("seller", i), pick(zip_pool), pick(cities), pick(states)]
                for i in range(max(5, orders // 30))]
     products = []
     for i in range(max(10, orders // 3)):
         if rng.random() < 0.02:  # the real data has products with no attributes at all
             products.append([_stable_id("product", i), "", "", "", "", "300", "20", "10", "15"])
         else:
-            products.append([_stable_id("product", i), str(rng.choice(categories)), str(int(rng.integers(5, 76))),
+            products.append([_stable_id("product", i), pick(categories), str(int(rng.integers(5, 76))),
                              str(int(rng.integers(4, 3992))), str(int(rng.integers(1, 20))), str(int(rng.integers(1, 30000))),
                              str(int(rng.integers(7, 105))), str(int(rng.integers(2, 105))), str(int(rng.integers(6, 118)))])
 
@@ -283,8 +287,8 @@ def _generate_olist(contract: DatasetContract, root: Path, orders: int, seed: in
     for i in range(orders):
         customer_id, order_id = _stable_id("customer", i), _stable_id("order", i)
         unique_id = _stable_id("person", int(rng.integers(0, max(1, int(orders * 0.97)))))
-        customer_zip = unknown_zip if rng.random() < 0.003 else str(rng.choice(zip_pool))
-        customers.append([customer_id, unique_id, customer_zip, str(rng.choice(cities)), str(rng.choice(states))])
+        customer_zip = unknown_zip if rng.random() < 0.003 else pick(zip_pool)
+        customers.append([customer_id, unique_id, customer_zip, pick(cities), pick(states)])
 
         purchase = EPOCH + timedelta(minutes=int(rng.integers(0, 60 * 24 * 600)))
         status = str(rng.choice(["delivered", "shipped", "canceled", "invoiced"], p=[0.94, 0.03, 0.02, 0.01]))

@@ -26,7 +26,8 @@ class TableMetrics:
     duplicates_flagged: int = 0
     duplicate_keys: int = 0
     missing_keys: int = 0
-    reprocessed: int = 0
+    reprocessed: int = 0  # rows from an earlier run's quarantine that loaded in this run
+    recovered_same_run: int = 0  # rows rejected and then recovered within this run
     failed: int = 0
     files_processed: list[str] = field(default_factory=list)
     files_skipped: list[str] = field(default_factory=list)

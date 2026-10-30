@@ -1,0 +1,380 @@
+{
+  "dataset": "hotel_bookings",
+  "rows": 1000,
+  "seed": 42,
+  "clean": {
+    "hotel_bookings": {
+      "source_rows": 1000,
+      "rejected": 0,
+      "target_rows": 1000,
+      "flagged_duplicates": 50,
+      "zero_night_stays": 53,
+      "adr_total": 137136.05,
+      "cancellations": 364,
+      "guests_total": 1955,
+      "nights_total": 3552,
+      "estimated_value_total": 515497.87
+    }
+  },
+  "dirty": {
+    "hotel_bookings": {
+      "source_rows": 1080,
+      "rejected": 80,
+      "rejected_by_rule": {
+        "zero_guests": 10,
+        "invalid_type:lead_time": 10,
+        "invalid_arrival_date": 10,
+        "negative_adr": 10,
+        "malformed_row": 10,
+        "unknown_reservation_status": 10,
+        "missing_required:hotel": 10,
+        "cancel_status_mismatch": 10
+      },
+      "malformed": 10,
+      "target_rows": 1000,
+      "flagged_duplicates": 50,
+      "zero_night_stays": 53,
+      "adr_total": 137136.05,
+      "cancellations": 364,
+      "guests_total": 1955,
+      "nights_total": 3552,
+      "estimated_value_total": 515497.87
+    }
+  },
+  "defect_rows": {
+    "hotel_bookings": [
+      {
+        "source_row_number": 7,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 12,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 33,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 38,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 39,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 46,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 48,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 55,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 59,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 63,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 65,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 70,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 72,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 114,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 133,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 139,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 152,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 188,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 218,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 231,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 240,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 260,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 292,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 309,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 318,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 321,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 333,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 338,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 343,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 369,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 378,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 383,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 386,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 404,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 416,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 447,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 455,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 463,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 473,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 474,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 479,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 489,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 492,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 494,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 516,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 525,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 529,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 557,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 569,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 571,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 597,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 618,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 640,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 647,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 691,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 694,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 698,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 730,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 746,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 750,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 762,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 768,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 774,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 813,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 820,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 842,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 863,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 864,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 890,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 901,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 925,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 949,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 956,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 965,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 987,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 988,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 1005,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 1018,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 1058,
+        "expected_rule": "zero_guests"
+      },
+      {
+        "source_row_number": 1076,
+        "expected_rule": "malformed_row"
+      }
+    ]
+  },
+  "late": {
+    "hotel_bookings": {
+      "target_rows": 20,
+      "flagged_duplicates": 0,
+      "zero_night_stays": 0,
+      "adr_total": 2876.39,
+      "cancellations": 9,
+      "guests_total": 45,
+      "nights_total": 59,
+      "estimated_value_total": 8482.41
+    }
+  }
+}

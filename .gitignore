@@ -25,6 +25,8 @@ data/rejected/**
 
 # Runtime output. reports/ is committed on purpose as execution evidence, except per-run files.
 reports/runs/
+data/expected/*/rows_10000.json
+data/expected/*/rows_100000.json
 logs/**
 !logs/.gitkeep
 

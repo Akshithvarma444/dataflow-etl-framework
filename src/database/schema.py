@@ -84,6 +84,14 @@ def ensure_ops_schema(engine: Engine) -> None:
     with engine.begin() as conn:
         conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {OPS_SCHEMA}"))
         OpsBase.metadata.create_all(conn)
+        inspector = inspect(conn)
+        for table in OpsBase.metadata.tables.values():
+            existing = {column["name"] for column in inspector.get_columns(table.name, schema=OPS_SCHEMA)}
+            if existing != {column.name for column in table.columns}:
+                raise SchemaDriftError(
+                    f"Operational table {table.fullname} is out of date. There are no migrations: "
+                    f"run history must be archived and the {OPS_SCHEMA} schema dropped to continue."
+                )
 
 
 def ensure_target_schema(conn: Connection, contract: DatasetContract) -> None:

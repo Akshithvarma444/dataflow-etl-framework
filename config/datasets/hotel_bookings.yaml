@@ -79,6 +79,9 @@ tables:
       - {name: negative_adults, check: range, column: adults, min: 0, severity: error}
       - {name: negative_children, check: range, column: children, min: 0, severity: error}
       - {name: negative_babies, check: range, column: babies, min: 0, severity: error}
+      - {name: implausible_lead_time, check: range, column: lead_time, max: 3660, severity: error, message: "Over ten years; the real maximum is 737."}
+      - {name: implausible_weekend_nights, check: range, column: stays_in_weekend_nights, max: 3660, severity: error, message: "Over ten years; the real maximum is 19."}
+      - {name: implausible_week_nights, check: range, column: stays_in_week_nights, max: 3660, severity: error, message: "Over ten years; the real maximum is 50."}
       - {name: unknown_hotel, check: allowed_values, column: hotel, values: ["City Hotel", "Resort Hotel"], severity: error}
       - {name: unknown_reservation_status, check: allowed_values, column: reservation_status, values: ["Check-Out", "Canceled", "No-Show"], severity: error}
       - {name: invalid_arrival_date, check: custom, severity: error, message: "Arrival year, month, and day do not form a real date."}
