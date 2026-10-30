@@ -32,7 +32,7 @@ def test_csv_values_are_all_text_with_one_based_row_numbers(tmp_path: Path) -> N
 
 def test_row_numbers_count_records_when_quoted_fields_contain_newlines(tmp_path: Path) -> None:
     path = tmp_path / "a.csv"
-    path.write_text('id,comment\n1,"two\nlines"\n2,ok\n', encoding="utf-8")
+    path.write_bytes(b'id,comment\n1,"two\nlines"\n2,ok\n')
 
     frame = read_all(path)[0].frame
 

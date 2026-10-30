@@ -63,6 +63,8 @@ def test_nul_character_is_rejected_rather_than_crashing_the_load(run_hotel, db: 
 
     assert result.status is RunStatus.SUCCESS_WITH_REJECTS, result.failure_reason
     assert scalar(db, "SELECT count(*) FROM hotel.hotel_bookings") == 1
+    # Quarantine JSONB cannot hold NUL either, so it is kept in an escaped, visible form.
+    assert scalar(db, "SELECT original_record->>'market_segment' FROM ops.rejected_records") == "Dir\\u0000ect"
 
 
 def test_sql_in_a_value_is_stored_as_plain_text(run_olist, db: Engine, tmp_path: Path) -> None:

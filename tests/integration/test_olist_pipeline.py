@@ -181,7 +181,7 @@ def test_geolocation_copies_collapse_and_the_count_is_kept(run_olist, db: Engine
     assert scalar(db, "SELECT count(DISTINCT city_normalized) FROM olist.geolocation") == 1
 
 
-def test_a_batch_size_of_one_gives_the_same_result(run_olist, db: Engine, generated) -> None:
+def test_a_small_batch_size_gives_the_same_result(run_olist, db: Engine, generated) -> None:
     root, answers = generated
 
     result = run_olist(root / "dirty", batch_size=97)

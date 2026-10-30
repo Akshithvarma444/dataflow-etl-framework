@@ -20,7 +20,7 @@ def test_missing_required_column_fails_the_run_and_publishes_nothing(run_hotel, 
 
     assert result.status is RunStatus.FAILED
     assert "missing required columns: ['adr']" in result.failure_reason
-    assert scalar(db, "SELECT count(*) FROM hotel.hotel_bookings") == 0
+    assert scalar(db, "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'hotel'") == 0
     assert scalar(db, "SELECT count(*) FROM ops.processed_files") == 0
 
 

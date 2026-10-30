@@ -58,6 +58,7 @@ def test_one_missing_olist_file_publishes_nothing(run_olist, db: Engine, tmp_pat
     result = run_olist(tmp_path)
 
     assert result.status is RunStatus.FAILED
-    assert scalar(db, "SELECT count(*) FROM olist.customers") == 0
+    # The tables were created in the same transaction, so even they rolled back.
+    assert scalar(db, "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'olist'") == 0
     assert result.metrics.load_total("inserted") == 0
     assert rows_of(db, "SELECT * FROM ops.processed_files") == []

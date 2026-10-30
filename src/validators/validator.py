@@ -24,6 +24,17 @@ from src.validators.result import IssueCollector, ValidationResult
 from src.validators.schema_validator import coerce_types
 
 
+def _storable(value: object) -> object:
+    """Make a value storable as JSONB, which cannot hold NUL, however it was malformed."""
+    if isinstance(value, str):
+        return value.replace("\x00", "\\u0000")
+    if isinstance(value, list):
+        return [_storable(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _storable(item) for key, item in value.items()}
+    return None if value is None or pd.isna(value) else value
+
+
 def rejection_id(dataset: str, table: str, checksum: str, row_number: int) -> str:
     """Deterministic, so replaying a file cannot quarantine the same record twice."""
     return hashlib.sha256(f"{dataset}|{table}|{checksum}|{row_number}".encode("utf-8")).hexdigest()
@@ -53,7 +64,7 @@ class RecordValidator:
                 "target_table": self.table.name,
                 "source_file": self.source.name,
                 "source_row_number": row_number,
-                "original_record": {k: (None if pd.isna(v) else v) for k, v in raw_records[position].items()},
+                "original_record": _storable(raw_records[position]),
                 "rejection_reason": "; ".join(sorted(issue.rule for issue in failures)),
                 "rule_failures": [
                     {"rule": issue.rule, "column": issue.column, "message": issue.message}
@@ -68,7 +79,7 @@ class RecordValidator:
             "target_table": self.table.name,
             "source_file": self.source.name,
             "source_row_number": row.source_row_number,
-            "original_record": {"_raw": json.loads(json.dumps(row.raw, default=str)), "_line_number": row.line_number},
+            "original_record": _storable({"_raw": json.loads(json.dumps(row.raw, default=str)), "_line_number": row.line_number}),
             "rejection_reason": row.reason.split(":")[0],
             "rule_failures": [{"rule": row.reason.split(":")[0], "column": None, "message": row.reason}],
         } for row in malformed]

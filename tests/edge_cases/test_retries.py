@@ -14,7 +14,7 @@ from src.loaders.postgres_loader import PostgresLoader
 from src.pipelines.pipeline import Pipeline, RunOptions
 from src.transformers.hotel_transformer import HotelTransformer
 from tests.conftest import rows_of, scalar
-from tests.helpers import hotel_row, olist_row, write_hotel, write_olist
+from tests.helpers import hotel_row, olist_row, write_hotel, write_olist, write_rows
 
 
 def fail_on_table(monkeypatch: pytest.MonkeyPatch, table_name: str, error: Exception, times: int = 10**6) -> list:
@@ -40,8 +40,8 @@ def test_failure_in_a_late_table_rolls_back_every_earlier_table(run_olist, db: E
 
     assert result.status is RunStatus.FAILED
     assert "disk full" in result.failure_reason
-    for table in ("geolocation", "customers", "orders", "order_items", "payments", "reviews", "order_summary"):
-        assert scalar(db, f"SELECT count(*) FROM olist.{table}") == 0, table
+    # The tables were created in the same transaction, so even they rolled back.
+    assert scalar(db, "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'olist'") == 0
     assert result.metrics.load_total("inserted") == 0
     assert result.metrics.total("failed") > 0
 
@@ -81,6 +81,20 @@ def test_rerun_after_failure_completes_with_no_duplicates(run_olist, db: Engine,
     assert scalar(db, "SELECT count(*) FROM olist.orders") == 1
     assert scalar(db, "SELECT count(*) FROM ops.processed_files") == 9
     assert scalar(db, "SELECT count(*) FROM ops.pipeline_runs") == 2
+
+
+def test_rollback_of_a_later_run_leaves_earlier_data_exactly_as_it_was(run_olist, db: Engine, tmp_path: Path, monkeypatch) -> None:
+    write_olist(tmp_path)
+    run_olist(tmp_path)
+    before = rows_of(db, "SELECT * FROM olist.customers")
+
+    write_rows(tmp_path / "olist_customers_dataset.csv", [olist_row("olist_customers_dataset.csv", customer_city="curitiba")])
+    write_rows(tmp_path / "olist_order_reviews_dataset.csv", [olist_row("olist_order_reviews_dataset.csv", review_score="1")])
+    fail_on_table(monkeypatch, "reviews", LoadError("disk full"))
+
+    assert run_olist(tmp_path).status is RunStatus.FAILED
+    assert rows_of(db, "SELECT * FROM olist.customers") == before
+    assert scalar(db, "SELECT count(*) FROM ops.record_history") == 0
 
 
 def test_rejections_from_a_rolled_back_run_are_not_kept(run_hotel, db: Engine, tmp_path: Path, monkeypatch) -> None:
@@ -173,7 +187,7 @@ def test_reconciliation_catches_a_transformation_bug_and_publishes_nothing(run_h
 
     assert result.status is RunStatus.FAILED
     assert "adr_total" in result.failure_reason
-    assert scalar(db, "SELECT count(*) FROM hotel.hotel_bookings") == 0
+    assert scalar(db, "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'hotel'") == 0
 
 
 def test_second_concurrent_run_is_refused(run_hotel, db: Engine, tmp_path: Path) -> None:
