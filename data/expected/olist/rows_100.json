@@ -1,0 +1,279 @@
+{
+  "dataset": "olist",
+  "rows": 100,
+  "seed": 42,
+  "late": {
+    "order_id": "700222efe9d1fc20c453a88ab5a28d14",
+    "item_total": 50.0
+  },
+  "out_of_order": {
+    "order_id": "7b9b436cd2670e815ed7c9ef51f5e820",
+    "final_status": "delivered"
+  },
+  "clean": {
+    "geolocation": {
+      "source_rows": 208,
+      "rejected": 0,
+      "target_rows": 146,
+      "collapsed": 62
+    },
+    "product_category_translations": {
+      "source_rows": 10,
+      "rejected": 0,
+      "target_rows": 10,
+      "collapsed": 0
+    },
+    "customers": {
+      "source_rows": 100,
+      "rejected": 0,
+      "target_rows": 100,
+      "collapsed": 0
+    },
+    "sellers": {
+      "source_rows": 5,
+      "rejected": 0,
+      "target_rows": 5,
+      "collapsed": 0
+    },
+    "products": {
+      "source_rows": 33,
+      "rejected": 0,
+      "target_rows": 33,
+      "collapsed": 0
+    },
+    "orders": {
+      "source_rows": 100,
+      "rejected": 0,
+      "target_rows": 100,
+      "collapsed": 0
+    },
+    "order_items": {
+      "source_rows": 121,
+      "rejected": 0,
+      "target_rows": 121,
+      "collapsed": 0,
+      "price_total": 27487.03,
+      "freight_total": 3552.99
+    },
+    "payments": {
+      "source_rows": 107,
+      "rejected": 0,
+      "target_rows": 107,
+      "collapsed": 0,
+      "payment_total": 31003.09
+    },
+    "reviews": {
+      "source_rows": 99,
+      "rejected": 0,
+      "target_rows": 99,
+      "collapsed": 0
+    },
+    "order_summary": {
+      "target_rows": 100
+    }
+  },
+  "dirty": {
+    "geolocation": {
+      "source_rows": 209,
+      "rejected": 1,
+      "rejected_by_rule": {
+        "invalid_latitude": 1
+      },
+      "malformed": 0,
+      "target_rows": 146,
+      "collapsed": 62
+    },
+    "product_category_translations": {
+      "source_rows": 10,
+      "rejected": 0,
+      "rejected_by_rule": {},
+      "malformed": 0,
+      "target_rows": 10,
+      "collapsed": 0
+    },
+    "customers": {
+      "source_rows": 101,
+      "rejected": 1,
+      "rejected_by_rule": {
+        "invalid_zip_prefix": 1
+      },
+      "malformed": 0,
+      "target_rows": 100,
+      "collapsed": 0
+    },
+    "sellers": {
+      "source_rows": 6,
+      "rejected": 1,
+      "rejected_by_rule": {
+        "invalid_state": 1
+      },
+      "malformed": 0,
+      "target_rows": 5,
+      "collapsed": 0
+    },
+    "products": {
+      "source_rows": 34,
+      "rejected": 1,
+      "rejected_by_rule": {
+        "negative_weight": 1
+      },
+      "malformed": 0,
+      "target_rows": 33,
+      "collapsed": 0
+    },
+    "orders": {
+      "source_rows": 106,
+      "rejected": 6,
+      "rejected_by_rule": {
+        "unknown_order_status": 1,
+        "missing_required:customer_id": 1,
+        "malformed_row": 1,
+        "duplicate_key": 1,
+        "fk_violation:customer_id": 1,
+        "invalid_type:order_purchase_timestamp": 1
+      },
+      "malformed": 1,
+      "target_rows": 100,
+      "collapsed": 0
+    },
+    "order_items": {
+      "source_rows": 126,
+      "rejected": 5,
+      "rejected_by_rule": {
+        "duplicate_key": 1,
+        "malformed_row": 1,
+        "fk_violation:product_id": 1,
+        "fk_violation:order_id": 1,
+        "non_positive_price": 1
+      },
+      "malformed": 1,
+      "target_rows": 121,
+      "collapsed": 0,
+      "price_total": 27487.03,
+      "freight_total": 3552.99
+    },
+    "payments": {
+      "source_rows": 110,
+      "rejected": 3,
+      "rejected_by_rule": {
+        "negative_payment": 1,
+        "unknown_payment_type": 1,
+        "fk_violation:order_id": 1
+      },
+      "malformed": 0,
+      "target_rows": 107,
+      "collapsed": 0,
+      "payment_total": 31003.09
+    },
+    "reviews": {
+      "source_rows": 101,
+      "rejected": 2,
+      "rejected_by_rule": {
+        "fk_violation:order_id": 1,
+        "invalid_review_score": 1
+      },
+      "malformed": 0,
+      "target_rows": 99,
+      "collapsed": 0
+    }
+  },
+  "defect_rows": {
+    "geolocation": [
+      {
+        "source_row_number": 100,
+        "expected_rule": "invalid_latitude"
+      }
+    ],
+    "product_category_translations": [],
+    "customers": [
+      {
+        "source_row_number": 10,
+        "expected_rule": "invalid_zip_prefix"
+      }
+    ],
+    "sellers": [
+      {
+        "source_row_number": 6,
+        "expected_rule": "invalid_state"
+      }
+    ],
+    "products": [
+      {
+        "source_row_number": 4,
+        "expected_rule": "negative_weight"
+      }
+    ],
+    "orders": [
+      {
+        "source_row_number": 28,
+        "expected_rule": "unknown_order_status"
+      },
+      {
+        "source_row_number": 68,
+        "expected_rule": "missing_required:customer_id"
+      },
+      {
+        "source_row_number": 71,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 80,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 88,
+        "expected_rule": "fk_violation:customer_id"
+      },
+      {
+        "source_row_number": 94,
+        "expected_rule": "invalid_type:order_purchase_timestamp"
+      }
+    ],
+    "order_items": [
+      {
+        "source_row_number": 6,
+        "expected_rule": "duplicate_key"
+      },
+      {
+        "source_row_number": 31,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 46,
+        "expected_rule": "fk_violation:product_id"
+      },
+      {
+        "source_row_number": 94,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 108,
+        "expected_rule": "non_positive_price"
+      }
+    ],
+    "payments": [
+      {
+        "source_row_number": 75,
+        "expected_rule": "negative_payment"
+      },
+      {
+        "source_row_number": 94,
+        "expected_rule": "unknown_payment_type"
+      },
+      {
+        "source_row_number": 106,
+        "expected_rule": "fk_violation:order_id"
+      }
+    ],
+    "reviews": [
+      {
+        "source_row_number": 1,
+        "expected_rule": "fk_violation:order_id"
+      },
+      {
+        "source_row_number": 58,
+        "expected_rule": "invalid_review_score"
+      }
+    ]
+  }
+}

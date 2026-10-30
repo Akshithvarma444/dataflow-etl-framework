@@ -1,0 +1,275 @@
+# Contract for the Olist Brazilian e-commerce dataset. Tables are listed in foreign-key
+# order. Rules and counts in comments were verified against the real files: see
+# reports/source_profile.json. Column names are the source's, including its misspellings.
+dataset: olist
+version: 1 # bump when transformer logic changes, so unchanged files are reprocessed
+db_schema: olist
+description: Brazilian marketplace orders, 2016-09 to 2018-10.
+default_source_dir: data/raw/olist
+transformer: src.transformers.olist_transformer:OlistTransformer
+
+tables:
+  - name: geolocation
+    description: Coordinates seen for a zip prefix. The source has no key.
+    grain: One row per distinct combination of the five source values.
+    source: {pattern: "olist_geolocation_dataset*.csv", format: csv}
+    primary_key: [geolocation_fingerprint]
+    duplicates:
+      # 261,831 of 1,000,163 rows are exact copies carrying no extra information.
+      policy: collapse
+      fingerprint_column: geolocation_fingerprint
+      count_column: duplicate_count
+    columns:
+      - {name: geolocation_zip_code_prefix, type: text, required: true, description: "First five zip digits. Text: 245,733 rows have leading zeros."}
+      - {name: geolocation_lat, type: float, required: true, description: "Latitude."}
+      - {name: geolocation_lng, type: float, required: true, description: "Longitude."}
+      - {name: geolocation_city, type: text, required: true, description: "City as supplied, with mixed accents."}
+      - {name: geolocation_state, type: text, required: true, description: "State code."}
+    derived_columns:
+      - {name: geolocation_fingerprint, type: text, required: true, description: "SHA-256 of the five source values."}
+      - {name: duplicate_count, type: integer, required: true, description: "How many source rows this row represents."}
+      - {name: city_normalized, type: text, required: true, description: "Lowercase city without accents: sao paulo and são paulo match."}
+    rules:
+      - {name: invalid_zip_prefix, check: regex, column: geolocation_zip_code_prefix, pattern: "\\d{5}", severity: error}
+      - {name: invalid_state, check: regex, column: geolocation_state, pattern: "[A-Z]{2}", severity: error}
+      - {name: invalid_latitude, check: range, column: geolocation_lat, min: -90, max: 90, severity: error}
+      - {name: invalid_longitude, check: range, column: geolocation_lng, min: -180, max: 180, severity: error}
+      - {name: latitude_outside_brazil, check: range, column: geolocation_lat, min: -34, max: 5.5, severity: warning, message: "Valid coordinate, implausible for Brazil."}
+      - {name: longitude_outside_brazil, check: range, column: geolocation_lng, min: -74.5, max: -34, severity: warning, message: "Valid coordinate, implausible for Brazil."}
+    aggregates:
+      - {name: rows_represented, target_expression: "sum(duplicate_count)", source_columns: []}
+    indexes:
+      - [geolocation_zip_code_prefix]
+
+  - name: product_category_translations
+    description: Portuguese category names with their English translations.
+    grain: One row per Portuguese category name.
+    source: {pattern: "product_category_name_translation*.csv", format: csv}
+    primary_key: [product_category_name]
+    columns:
+      - {name: product_category_name, type: text, required: true, description: "Portuguese category name."}
+      - {name: product_category_name_english, type: text, required: true, description: "English category name."}
+
+  - name: customers
+    description: A customer identity per order. customer_unique_id identifies the person.
+    grain: One row per customer_id, which is one per order.
+    source: {pattern: "olist_customers_dataset*.csv", format: csv}
+    primary_key: [customer_id]
+    columns:
+      - {name: customer_id, type: text, required: true, description: "Per-order customer key."}
+      - {name: customer_unique_id, type: text, required: true, description: "The person. Not unique here: 3,345 repeats."}
+      - {name: customer_zip_code_prefix, type: text, required: true, description: "First five zip digits."}
+      - {name: customer_city, type: text, required: true, description: "City, trimmed and lowercased."}
+      - {name: customer_state, type: text, required: true, description: "State code."}
+    references:
+      # Soft: 278 real rows use a zip missing from geolocation, yet are valid customers.
+      - {column: customer_zip_code_prefix, parent_table: geolocation, parent_column: geolocation_zip_code_prefix, on_missing: warning}
+    rules:
+      - {name: invalid_zip_prefix, check: regex, column: customer_zip_code_prefix, pattern: "\\d{5}", severity: error}
+      - {name: invalid_state, check: regex, column: customer_state, pattern: "[A-Z]{2}", severity: error}
+    indexes:
+      - [customer_unique_id]
+
+  - name: sellers
+    description: Marketplace sellers.
+    grain: One row per seller.
+    source: {pattern: "olist_sellers_dataset*.csv", format: csv}
+    primary_key: [seller_id]
+    columns:
+      - {name: seller_id, type: text, required: true, description: "Seller key."}
+      - {name: seller_zip_code_prefix, type: text, required: true, description: "First five zip digits."}
+      - {name: seller_city, type: text, required: true, description: "City, trimmed and lowercased."}
+      - {name: seller_state, type: text, required: true, description: "State code."}
+    references:
+      # Soft: 7 real rows use a zip missing from geolocation.
+      - {column: seller_zip_code_prefix, parent_table: geolocation, parent_column: geolocation_zip_code_prefix, on_missing: warning}
+    rules:
+      - {name: invalid_zip_prefix, check: regex, column: seller_zip_code_prefix, pattern: "\\d{5}", severity: error}
+      - {name: invalid_state, check: regex, column: seller_state, pattern: "[A-Z]{2}", severity: error}
+
+  - name: products
+    description: Product catalog. 610 real rows have no category or name attributes.
+    grain: One row per product.
+    source: {pattern: "olist_products_dataset*.csv", format: csv}
+    primary_key: [product_id]
+    columns:
+      - {name: product_id, type: text, required: true, description: "Product key."}
+      - {name: product_category_name, type: text, description: "Portuguese category. Null in 610 real rows."}
+      - {name: product_name_lenght, type: integer, description: "Name length. Misspelled in the source; kept so lineage is exact."}
+      - {name: product_description_lenght, type: integer, description: "Description length. Misspelled in the source."}
+      - {name: product_photos_qty, type: integer, description: "Photo count."}
+      - {name: product_weight_g, type: integer, description: "Weight in grams. 0 in 4 real rows, flagged."}
+      - {name: product_length_cm, type: integer, description: "Length."}
+      - {name: product_height_cm, type: integer, description: "Height."}
+      - {name: product_width_cm, type: integer, description: "Width."}
+    references:
+      # Soft: 2 real categories (13 products) have no translation.
+      - {column: product_category_name, parent_table: product_category_translations, parent_column: product_category_name, on_missing: warning}
+    rules:
+      - {name: negative_weight, check: range, column: product_weight_g, min: 0, severity: error}
+      - {name: negative_length, check: range, column: product_length_cm, min: 0, severity: error}
+      - {name: negative_height, check: range, column: product_height_cm, min: 0, severity: error}
+      - {name: negative_width, check: range, column: product_width_cm, min: 0, severity: error}
+      - {name: zero_weight, check: range, column: product_weight_g, min: 1, severity: warning}
+    indexes:
+      - [product_category_name]
+
+  - name: orders
+    description: Orders with their lifecycle timestamps. Timezone is not stated by the source.
+    grain: One row per order.
+    source: {pattern: "olist_orders_dataset*.csv", format: csv}
+    primary_key: [order_id]
+    load:
+      strategy: upsert
+      version_column: source_event_ts
+    columns:
+      - {name: order_id, type: text, required: true, description: "Order key."}
+      - {name: customer_id, type: text, required: true, description: "References customers."}
+      - {name: order_status, type: text, required: true, description: "Order status, lowercased."}
+      - {name: order_purchase_timestamp, type: timestamp, required: true, description: "Purchase time."}
+      - {name: order_approved_at, type: timestamp, description: "Payment approval. Null in 160 real rows."}
+      - {name: order_delivered_carrier_date, type: timestamp, description: "Handed to carrier. Null in 1,783 real rows."}
+      - {name: order_delivered_customer_date, type: timestamp, description: "Delivered. Null in 2,965 real rows."}
+      - {name: order_estimated_delivery_date, type: timestamp, required: true, description: "Promised delivery date."}
+    derived_columns:
+      - {name: source_event_ts, type: timestamp, required: true, description: "Latest lifecycle timestamp, the version that blocks out-of-order overwrites."}
+      - {name: delivery_days, type: decimal, description: "Days from purchase to delivery. Null if undelivered."}
+      - {name: is_late_delivery, type: integer, description: "1 if delivered after the promised date. Null if undelivered."}
+    references:
+      - {column: customer_id, parent_table: customers, parent_column: customer_id, on_missing: error}
+    rules:
+      - {name: unknown_order_status, check: allowed_values, column: order_status, severity: error, values: [delivered, shipped, canceled, unavailable, invoiced, processing, created, approved]}
+      - {name: approved_before_purchase, check: compare, left: order_approved_at, op: ">=", right: order_purchase_timestamp, severity: warning}
+      - {name: carrier_before_purchase, check: compare, left: order_delivered_carrier_date, op: ">=", right: order_purchase_timestamp, severity: warning, message: "166 real rows; source clock noise, order still real."}
+      - {name: delivered_before_carrier, check: compare, left: order_delivered_customer_date, op: ">=", right: order_delivered_carrier_date, severity: warning, message: "23 real rows; source clock noise, order still real."}
+      - {name: delivered_without_date, check: custom, severity: warning, message: "Status delivered with no delivery date (8 real rows)."}
+    indexes:
+      - [customer_id]
+      - [order_purchase_timestamp]
+
+  - name: order_items
+    description: Order lines. The source has no quantity column; each row is one unit.
+    grain: One row per order and item sequence.
+    source: {pattern: "olist_order_items_dataset*.csv", format: csv}
+    primary_key: [order_id, order_item_id]
+    columns:
+      - {name: order_id, type: text, required: true, description: "References orders."}
+      - {name: order_item_id, type: integer, required: true, description: "Item sequence within the order."}
+      - {name: product_id, type: text, required: true, description: "References products."}
+      - {name: seller_id, type: text, required: true, description: "References sellers."}
+      - {name: shipping_limit_date, type: timestamp, required: true, description: "Seller shipping deadline."}
+      - {name: price, type: decimal, required: true, description: "Unit price."}
+      - {name: freight_value, type: decimal, required: true, description: "Freight for this item."}
+    derived_columns:
+      - {name: item_total, type: decimal, required: true, description: "price + freight_value."}
+    references:
+      - {column: order_id, parent_table: orders, parent_column: order_id, on_missing: error}
+      - {column: product_id, parent_table: products, parent_column: product_id, on_missing: error}
+      - {column: seller_id, parent_table: sellers, parent_column: seller_id, on_missing: error}
+    rules:
+      - {name: invalid_item_sequence, check: range, column: order_item_id, min: 1, severity: error}
+      - {name: non_positive_price, check: range, column: price, min: 0, min_exclusive: true, severity: error}
+      - {name: negative_freight, check: range, column: freight_value, min: 0, severity: error}
+    aggregates:
+      - {name: price_total, target_expression: "sum(price)", source_columns: [price]}
+      - {name: freight_total, target_expression: "sum(freight_value)", source_columns: [freight_value]}
+      - {name: item_total, target_expression: "sum(item_total)", source_columns: [price, freight_value]}
+    indexes:
+      - [product_id]
+      - [seller_id]
+
+  - name: payments
+    description: Payment components of an order.
+    grain: One row per order and payment sequence.
+    source: {pattern: "olist_order_payments_dataset*.csv", format: csv}
+    primary_key: [order_id, payment_sequential]
+    columns:
+      - {name: order_id, type: text, required: true, description: "References orders."}
+      - {name: payment_sequential, type: integer, required: true, description: "Payment sequence. 80 real orders have gaps, so not required to be contiguous."}
+      - {name: payment_type, type: text, required: true, description: "Payment method."}
+      - {name: payment_installments, type: integer, required: true, description: "Installments. 0 in 2 real rows, flagged."}
+      - {name: payment_value, type: decimal, required: true, description: "Amount paid. 0 in 9 real rows, flagged."}
+    references:
+      - {column: order_id, parent_table: orders, parent_column: order_id, on_missing: error}
+    rules:
+      - {name: invalid_payment_sequence, check: range, column: payment_sequential, min: 1, severity: error}
+      - {name: negative_payment, check: range, column: payment_value, min: 0, severity: error}
+      - {name: negative_installments, check: range, column: payment_installments, min: 0, severity: error}
+      - {name: unknown_payment_type, check: allowed_values, column: payment_type, severity: error, values: [credit_card, boleto, voucher, debit_card, not_defined]}
+      - {name: zero_payment, check: range, column: payment_value, min: 0, min_exclusive: true, severity: warning}
+      - {name: zero_installments, check: range, column: payment_installments, min: 1, severity: warning}
+      - {name: undefined_payment_type, check: allowed_values, column: payment_type, severity: warning, values: [credit_card, boleto, voucher, debit_card]}
+    aggregates:
+      - {name: payment_total, target_expression: "sum(payment_value)", source_columns: [payment_value]}
+
+  - name: reviews
+    description: Customer reviews. review_id alone repeats 814 times and order_id 551 times.
+    grain: One row per review and order, verified unique.
+    source: {pattern: "olist_order_reviews_dataset*.csv", format: csv}
+    primary_key: [review_id, order_id]
+    columns:
+      - {name: review_id, type: text, required: true, description: "Review key, shared across orders in 814 real rows."}
+      - {name: order_id, type: text, required: true, description: "References orders."}
+      - {name: review_score, type: integer, required: true, description: "Score from 1 to 5."}
+      - {name: review_comment_title, type: text, description: "Title. Null in 87,656 real rows."}
+      - {name: review_comment_message, type: text, description: "Comment, may contain newlines. Null in 58,247 real rows."}
+      - {name: review_creation_date, type: timestamp, required: true, description: "When the survey was sent."}
+      - {name: review_answer_timestamp, type: timestamp, required: true, description: "When it was answered."}
+    derived_columns:
+      - {name: has_comment, type: integer, required: true, description: "1 if a comment or title was written."}
+    references:
+      - {column: order_id, parent_table: orders, parent_column: order_id, on_missing: error}
+    rules:
+      - {name: invalid_review_score, check: range, column: review_score, min: 1, max: 5, severity: error}
+      - {name: answered_before_created, check: compare, left: review_answer_timestamp, op: ">=", right: review_creation_date, severity: warning}
+
+derived_tables:
+  - name: order_summary
+    description: Order-level totals, rebuilt from the published tables in the load transaction.
+    grain: One row per order, including orders with no items (775 real) or payments (1 real).
+    primary_key: [order_id]
+    columns:
+      - {name: order_id, type: text, required: true, description: "Order key."}
+      - {name: customer_id, type: text, required: true, description: "Customer key."}
+      - {name: order_status, type: text, required: true, description: "Order status."}
+      - {name: order_purchase_timestamp, type: timestamp, required: true, description: "Purchase time."}
+      - {name: item_count, type: integer, required: true, description: "Order lines, which equals units because each row is one unit."}
+      - {name: items_total, type: decimal, required: true, description: "Sum of price."}
+      - {name: freight_total, type: decimal, required: true, description: "Sum of freight."}
+      - {name: order_total, type: decimal, required: true, description: "items_total + freight_total."}
+      - {name: payment_count, type: integer, required: true, description: "Payment components."}
+      - {name: payment_total, type: decimal, required: true, description: "Sum of payments."}
+      - {name: payment_difference, type: decimal, required: true, description: "payment_total - order_total."}
+      - {name: payment_matches_order, type: integer, description: "1 if within 0.05. Null if items or payments are missing. Differs on 260 real orders: unexplained by the source, so reported rather than rejected."}
+    refresh_sql:
+      - "DELETE FROM olist.order_summary"
+      - >-
+        INSERT INTO olist.order_summary
+        SELECT o.order_id, o.customer_id, o.order_status, o.order_purchase_timestamp,
+               coalesce(i.item_count, 0), coalesce(i.items_total, 0), coalesce(i.freight_total, 0),
+               coalesce(i.items_total, 0) + coalesce(i.freight_total, 0),
+               coalesce(p.payment_count, 0), coalesce(p.payment_total, 0),
+               coalesce(p.payment_total, 0) - coalesce(i.items_total, 0) - coalesce(i.freight_total, 0),
+               CASE WHEN i.order_id IS NULL OR p.order_id IS NULL THEN NULL
+                    WHEN abs(p.payment_total - i.items_total - i.freight_total) <= 0.05 THEN 1
+                    ELSE 0 END
+        FROM olist.orders o
+        LEFT JOIN (SELECT order_id, count(*) AS item_count, sum(price) AS items_total,
+                          sum(freight_value) AS freight_total
+                   FROM olist.order_items GROUP BY order_id) i USING (order_id)
+        LEFT JOIN (SELECT order_id, count(*) AS payment_count, sum(payment_value) AS payment_total
+                   FROM olist.payments GROUP BY order_id) p USING (order_id)
+
+checks:
+  - name: one_summary_row_per_order
+    description: order_summary has exactly one row per order.
+    sql: "SELECT abs((SELECT count(*) FROM olist.orders) - (SELECT count(*) FROM olist.order_summary))"
+  - name: summary_items_match_lines
+    description: Summary item totals reconcile to order lines.
+    sql: "SELECT count(*) FROM (SELECT (SELECT coalesce(sum(items_total), 0) FROM olist.order_summary) AS a, (SELECT coalesce(sum(price), 0) FROM olist.order_items) AS b) t WHERE a <> b"
+  - name: summary_payments_match_payments
+    description: Summary payment totals reconcile to payments.
+    sql: "SELECT count(*) FROM (SELECT (SELECT coalesce(sum(payment_total), 0) FROM olist.order_summary) AS a, (SELECT coalesce(sum(payment_value), 0) FROM olist.payments) AS b) t WHERE a <> b"
+  - name: item_total_formula
+    description: item_total always equals price + freight_value.
+    sql: "SELECT count(*) FROM olist.order_items WHERE item_total <> price + freight_value"

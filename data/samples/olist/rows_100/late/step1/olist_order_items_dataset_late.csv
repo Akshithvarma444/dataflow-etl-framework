@@ -1,0 +1,2 @@
+order_id,order_item_id,product_id,seller_id,shipping_limit_date,price,freight_value
+700222efe9d1fc20c453a88ab5a28d14,1,cfae018a6e904f809526e97e5ed1ed4e,e56db77362b46dcdde3516c3483fdde9,2018-12-02 00:00:00,42.50,7.50

@@ -23,7 +23,8 @@ data/processed/**
 data/rejected/**
 !data/**/.gitkeep
 
-# Runtime output. reports/ is committed on purpose as execution evidence.
+# Runtime output. reports/ is committed on purpose as execution evidence, except per-run files.
+reports/runs/
 logs/**
 !logs/.gitkeep
 

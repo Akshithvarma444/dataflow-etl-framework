@@ -6,6 +6,16 @@ so renaming one is a data migration, not just a refactor.
 
 from enum import StrEnum
 
+SOURCE_ROW = "source_row_number"
+SOURCE_FILE = "source_file"
+ROW_HASH = "row_hash"
+DQ_WARNINGS = "dq_warnings"
+OPS_SCHEMA = "ops"
+MALFORMED_ROW = "malformed_row"
+FK_VIOLATION = "fk_violation"
+DUPLICATE_KEY = "duplicate_key"
+AGGREGATE_TOLERANCE = 0.01
+
 
 class RunStatus(StrEnum):
     """Lifecycle of one row in ``pipeline_runs``."""
@@ -16,6 +26,15 @@ class RunStatus(StrEnum):
     SKIPPED = "skipped"  # every source file was already processed
     FAILED = "failed"
     ABANDONED = "abandoned"  # process died; found still "running" by a later run
+
+
+class RunMode(StrEnum):
+    """Why a run was started, which decides how it treats processed files and targets."""
+
+    INCREMENTAL = "incremental"  # the default: only new or changed files
+    BACKFILL = "backfill"  # reprocess every file through the normal upsert
+    FULL_REFRESH = "full_refresh"  # drop target tables and rebuild them
+    DRY_RUN = "dry_run"  # do everything, then roll back
 
 
 class RuleSeverity(StrEnum):

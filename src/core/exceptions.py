@@ -30,6 +30,14 @@ class SchemaDriftError(DataFlowError):
     """A source no longer matches its contract, for example a required column is gone."""
 
 
+class ConcurrentRunError(DataFlowError):
+    """Another run of the same dataset holds the lock."""
+
+
+class ReconciliationError(DataFlowError):
+    """Source and target disagree in a way nothing explains, so nothing is published."""
+
+
 class LoadError(DataFlowError):
     """A target write failed and its transaction was rolled back."""
 

@@ -1,0 +1,101 @@
+hotel,is_canceled,lead_time,arrival_date_year,arrival_date_month,arrival_date_week_number,arrival_date_day_of_month,stays_in_weekend_nights,stays_in_week_nights,adults,children,babies,meal,country,market_segment,distribution_channel,is_repeated_guest,previous_cancellations,previous_bookings_not_canceled,reserved_room_type,assigned_room_type,booking_changes,deposit_type,agent,company,days_in_waiting_list,customer_type,adr,required_car_parking_spaces,total_of_special_requests,reservation_status,reservation_status_date,loyalty_tier
+Resort Hotel,0,0,2015,September,37,9,2,2,2,0,0,SC,VCT,Groups,GDS,0,0,0,D,D,2,No Deposit,32,NULL,0,Transient,1000.00,0,2,Check-Out,2015-09-13,gold
+Resort Hotel,0,186,2016,December,50,17,0,0,2,0,0,BB,FJI,Offline TA/TO,Corporate,0,0,0,F,F,2,No Deposit,218,NULL,0,Group,0.00,0,1,Check-Out,2016-12-17,gold
+City Hotel,1,318,2015,October,43,19,2,0,1,0,0,BB,HND,Groups,Corporate,0,0,0,D,D,1,No Deposit,16,NULL,0,Transient,188.08,1,0,Canceled,2015-02-10,gold
+Resort Hotel,1,264,2017,May,18,6,0,2,1,0,0,BB,TZA,Groups,GDS,0,0,0,C,C,0,No Deposit,303,NULL,0,Transient-Party,204.62,0,1,Canceled,2017-01-18,gold
+City Hotel,0,305,2017,June,24,17,1,1,2,0,0,BB,SDN,Groups,Corporate,0,0,0,G,G,0,No Deposit,70,NULL,0,Contract,190.55,0,2,Check-Out,2017-06-19,gold
+City Hotel,0,264,2015,August,31,2,0,1,2,0,0,BB,GRC,Groups,Direct,0,0,0,B,B,2,Non Refund,271,NULL,0,Transient-Party,163.41,0,2,Check-Out,2015-08-03,gold
+City Hotel,1,3,2016,June,23,11,1,4,2,0,0,SC,NLD,Offline TA/TO,TA/TO,0,0,0,E,E,1,No Deposit,404,NULL,0,Group,156.35,0,0,Canceled,2016-06-08,gold
+Resort Hotel,1,174,2015,November,47,20,0,1,2,0,0,BB,PER,Direct,Direct,0,0,0,G,G,0,No Deposit,373,NULL,0,Transient,227.25,0,0,Canceled,2015-06-26,gold
+City Hotel,0,199,2016,March,9,2,0,5,1,0,0,BB,GRC,Online TA,GDS,0,0,0,D,D,2,No Deposit,41,NULL,0,Transient-Party,42.93,0,0,Check-Out,2016-03-07,gold
+City Hotel,1,199,2017,July,30,24,2,5,3,1,0,BB,BWA,Corporate,TA/TO,0,0,0,F,F,1,No Deposit,117,NULL,0,Transient-Party,173.13,0,1,Canceled,2017-07-20,gold
+Resort Hotel,0,346,2017,July,26,1,1,5,2,0,0,BB,COG,Offline TA/TO,Direct,0,0,0,B,B,0,No Deposit,NULL,NULL,0,Transient-Party,92.05,0,2,Check-Out,2017-07-07,gold
+Resort Hotel,0,321,2015,August,33,12,1,4,2,0,0,BB,URY,Groups,Direct,0,0,0,C,C,0,No Deposit,NULL,NULL,0,Group,145.95,0,2,Check-Out,2015-08-17,gold
+City Hotel,0,311,2016,January,1,6,2,3,2,0,0,BB,BWA,Online TA,TA/TO,0,0,0,F,F,1,No Deposit,184,NULL,0,Transient,203.59,0,0,Check-Out,2016-01-11,gold
+Resort Hotel,0,131,2016,December,49,11,2,4,2,0,0,BB,NAM,Groups,GDS,0,0,0,D,D,1,No Deposit,363,NULL,0,Transient,218.20,0,2,Check-Out,2016-12-17,gold
+City Hotel,0,378,2016,June,24,16,2,5,1,0,0,BB,AUT,Corporate,GDS,0,0,0,A,A,2,No Deposit,NULL,NULL,0,Transient,163.92,0,0,Check-Out,2016-06-23,gold
+City Hotel,1,326,2016,December,50,12,2,5,2,0,0,BB,BWA,Offline TA/TO,GDS,0,0,1,C,C,0,Non Refund,NULL,NULL,0,Contract,116.48,0,1,Canceled,2016-04-07,gold
+City Hotel,0,38,2016,October,40,7,1,0,2,0,0,BB,ARG,Corporate,Corporate,0,0,1,D,D,0,No Deposit,312,NULL,0,Transient,102.03,0,1,Check-Out,2016-10-08,gold
+City Hotel,0,5,2015,October,43,21,2,1,1,0,0,HB,NLD,Corporate,GDS,0,0,0,G,G,2,No Deposit,57,NULL,0,Transient,47.59,0,0,Check-Out,2015-10-24,gold
+City Hotel,1,21,2017,May,18,3,2,4,2,0,0,BB,MNE,Direct,TA/TO,0,0,0,F,F,0,No Deposit,318,271,0,Transient-Party,189.08,0,0,Canceled,2017-04-29,gold
+City Hotel,0,184,2016,November,47,24,0,0,1,0,0,BB,URY,Groups,TA/TO,0,0,0,D,D,1,No Deposit,239,NULL,0,Transient-Party,0.00,0,1,Check-Out,2016-11-24,gold
+City Hotel,0,246,2017,January,1,5,1,3,2,0,0,HB,SWZ,Groups,Corporate,0,0,0,C,C,1,No Deposit,NULL,NULL,0,Group,155.32,0,0,Check-Out,2017-01-09,gold
+City Hotel,1,125,2016,September,38,19,1,4,1,0,0,SC,HND,Direct,Direct,0,0,0,F,F,0,No Deposit,NULL,NULL,0,Transient-Party,43.08,0,0,Canceled,2016-06-23,gold
+City Hotel,0,222,2016,May,21,26,2,5,2,0,0,BB,BWA,Offline TA/TO,TA/TO,0,0,0,E,E,0,No Deposit,146,NULL,0,Transient-Party,247.97,0,0,Check-Out,2016-06-02,gold
+City Hotel,0,268,2017,May,18,5,1,2,2,0,0,HB,GIN,Groups,GDS,0,0,0,F,F,1,No Deposit,NULL,NULL,0,Transient-Party,52.20,0,1,Check-Out,2017-05-08,gold
+City Hotel,1,103,2015,November,47,18,0,1,2,0,0,BB,MCO,Corporate,GDS,0,0,0,A,A,1,No Deposit,NULL,NULL,0,Group,134.12,0,2,Canceled,2015-11-16,gold
+City Hotel,0,61,2016,November,48,28,0,5,1,0,0,FB,FJI,Corporate,TA/TO,0,0,0,C,C,1,No Deposit,222,NULL,0,Group,197.50,1,1,Check-Out,2016-12-03,gold
+Resort Hotel,0,262,2015,September,39,25,2,4,1,0,0,BB,CUB,Direct,Corporate,0,0,0,F,F,0,No Deposit,262,NULL,0,Transient-Party,195.28,0,1,Check-Out,2015-10-01,gold
+Resort Hotel,1,346,2016,May,19,9,1,5,2,0,0,Undefined,SDN,Direct,Corporate,0,0,0,C,C,1,No Deposit,NULL,NULL,0,Transient,111.80,0,2,Canceled,2016-03-05,gold
+City Hotel,1,354,2016,November,45,13,1,2,2,0,0,BB,TZA,Online TA,Direct,0,0,0,C,C,1,No Deposit,437,NULL,0,Contract,153.58,0,1,Canceled,2015-12-09,gold
+City Hotel,0,325,2017,July,29,20,2,1,1,1,0,BB,CAN,Corporate,GDS,0,0,0,D,D,1,No Deposit,33,NULL,0,Group,205.39,0,0,Check-Out,2017-07-23,gold
+City Hotel,0,82,2017,March,10,6,0,2,1,0,0,BB,GRC,Groups,Direct,0,0,0,B,B,0,No Deposit,161,NULL,0,Contract,122.77,0,0,Check-Out,2017-03-08,gold
+Resort Hotel,0,284,2016,July,28,16,0,5,1,0,0,BB,BWA,Online TA,Corporate,0,0,0,C,C,0,No Deposit,426,NULL,0,Transient-Party,49.95,0,0,Check-Out,2016-07-21,gold
+Resort Hotel,0,393,2016,September,37,12,1,5,2,0,0,BB,FJI,Direct,Direct,1,0,0,B,B,2,No Deposit,354,NULL,0,Transient,210.76,0,0,Check-Out,2016-09-18,gold
+City Hotel,1,202,2016,December,49,11,2,4,1,0,0,BB,PER,Online TA,Direct,0,0,0,G,G,1,No Deposit,78,NULL,0,Transient,40.84,0,0,No-Show,2016-08-21,gold
+Resort Hotel,0,213,2016,September,36,10,2,4,2,0,0,BB,UKR,Online TA,GDS,0,0,0,F,F,2,Non Refund,341,NULL,0,Transient,199.27,0,1,Check-Out,2016-09-16,gold
+Resort Hotel,0,258,2016,July,27,6,1,5,2,0,0,HB,ISL,Online TA,TA/TO,0,0,1,C,C,0,No Deposit,465,NULL,0,Group,195.76,0,1,Check-Out,2016-07-12,gold
+City Hotel,0,230,2016,October,39,1,0,3,2,0,0,BB,PER,Offline TA/TO,TA/TO,0,0,0,G,G,0,No Deposit,239,NULL,0,Contract,81.32,1,0,Check-Out,2016-10-04,gold
+City Hotel,0,269,2016,July,28,15,0,3,2,0,0,FB,MCO,Online TA,Direct,0,0,0,D,D,0,No Deposit,201,NULL,0,Contract,93.01,0,0,Check-Out,2016-07-18,gold
+Resort Hotel,0,295,2017,May,18,4,1,4,2,1,0,SC,GMB,Offline TA/TO,TA/TO,0,0,0,C,C,2,No Deposit,67,NULL,0,Group,125.02,0,2,Check-Out,2017-05-09,gold
+City Hotel,1,14,2016,January,2,13,0,0,2,0,0,SC,HTI,Corporate,GDS,0,0,0,B,B,0,No Deposit,NULL,NULL,0,Transient-Party,0.00,0,0,Canceled,2015-12-30,gold
+Resort Hotel,0,264,2016,July,26,2,1,3,2,0,0,BB,AUS,Direct,Corporate,0,0,0,B,B,1,Non Refund,144,NULL,5,Contract,211.84,0,2,Check-Out,2016-07-06,gold
+Resort Hotel,0,173,2015,August,34,19,2,0,2,0,0,BB,MNE,Corporate,Corporate,0,0,0,B,B,1,No Deposit,145,NULL,5,Group,122.51,0,2,Check-Out,2015-08-21,gold
+City Hotel,1,285,2016,December,48,3,1,5,2,0,0,BB,PER,Offline TA/TO,TA/TO,0,0,0,B,B,2,No Deposit,331,NULL,0,Group,124.66,0,2,Canceled,2016-08-21,gold
+City Hotel,1,110,2017,June,25,21,2,5,2,1,0,BB,AUS,Offline TA/TO,Corporate,0,0,0,G,G,2,No Deposit,481,NULL,0,Contract,99.54,0,0,Canceled,2017-03-12,gold
+Resort Hotel,0,177,2016,March,10,11,2,2,2,2,0,BB,AUT,Groups,Corporate,0,0,0,E,E,1,No Deposit,181,NULL,0,Transient-Party,91.28,0,1,Check-Out,2016-03-15,gold
+City Hotel,1,181,2015,November,46,10,0,2,3,0,0,BB,BTN,Offline TA/TO,GDS,0,0,0,E,E,0,Non Refund,136,NULL,0,Contract,69.05,0,0,Canceled,2015-06-18,gold
+City Hotel,0,274,2016,August,31,4,1,1,1,2,0,BB,VCT,Offline TA/TO,TA/TO,0,0,0,A,A,2,No Deposit,416,NULL,0,Contract,248.33,0,2,Check-Out,2016-08-06,gold
+City Hotel,1,351,2015,December,52,23,2,3,1,0,0,BB,GIN,Online TA,TA/TO,0,0,0,A,A,0,No Deposit,NULL,NULL,0,Contract,72.24,0,0,Canceled,2015-09-16,gold
+Resort Hotel,0,185,2015,December,50,7,1,4,1,0,0,HB,CAN,Direct,GDS,0,0,0,E,E,2,Non Refund,197,NULL,0,Contract,86.03,0,0,Check-Out,2015-12-12,gold
+City Hotel,0,226,2017,July,29,17,0,0,1,0,0,BB,PER,Online TA,GDS,0,0,0,C,C,0,No Deposit,261,NULL,0,Transient-Party,0.00,0,0,Check-Out,2017-07-17,gold
+Resort Hotel,0,68,2016,October,41,15,2,4,1,0,0,BB,HTI,Corporate,TA/TO,0,0,0,F,F,0,No Deposit,68,NULL,0,Contract,138.69,0,1,Check-Out,2016-10-21,gold
+City Hotel,1,355,2017,July,27,4,1,4,1,0,0,BB,GRD,Online TA,TA/TO,0,0,0,A,A,1,No Deposit,400,NULL,0,Group,60.96,0,2,Canceled,2017-06-16,gold
+City Hotel,0,188,2016,April,17,26,2,3,2,0,0,BB,GMB,Corporate,GDS,0,0,0,A,A,2,No Deposit,146,NULL,0,Contract,80.57,0,0,Check-Out,2016-05-01,gold
+City Hotel,1,200,2016,April,17,25,0,0,2,0,0,BB,PRT,Corporate,Direct,0,0,0,F,F,1,No Deposit,20,NULL,0,Transient,0.00,0,2,Canceled,2015-12-02,gold
+City Hotel,1,314,2015,December,50,8,1,3,1,0,0,SC,SDN,Corporate,GDS,0,0,0,D,D,0,No Deposit,253,NULL,5,Transient-Party,224.54,0,2,Canceled,2015-03-15,gold
+Resort Hotel,1,51,2016,May,22,31,0,2,1,0,0,BB,DZA,Online TA,Direct,0,0,0,E,E,2,No Deposit,NULL,NULL,0,Contract,215.92,0,1,Canceled,2016-05-25,gold
+Resort Hotel,0,165,2017,July,29,18,0,4,2,0,0,BB,HTI,Corporate,Corporate,0,0,0,G,G,0,No Deposit,381,NULL,0,Group,176.85,0,2,Check-Out,2017-07-22,gold
+City Hotel,0,348,2015,November,44,1,0,5,3,0,0,SC,NLD,Corporate,TA/TO,0,1,0,D,D,2,Non Refund,NULL,NULL,0,Transient-Party,133.45,0,1,Check-Out,2015-11-06,gold
+City Hotel,0,193,2015,December,51,18,2,4,1,0,0,SC,GIN,Online TA,TA/TO,0,0,1,B,B,2,No Deposit,110,21,0,Transient,121.13,0,2,Check-Out,2015-12-24,gold
+City Hotel,1,145,2015,August,34,20,0,3,2,0,0,BB,SDN,Direct,GDS,0,0,0,D,D,1,No Deposit,92,NULL,0,Group,171.46,0,0,Canceled,2015-04-09,gold
+City Hotel,0,75,2017,June,24,13,0,4,2,0,0,BB,ISL,Direct,Corporate,0,0,0,D,D,1,No Deposit,490,NULL,0,Group,144.51,0,2,Check-Out,2017-06-17,gold
+Resort Hotel,0,255,2017,February,6,10,2,2,2,0,0,HB,GIN,Online TA,Corporate,0,0,0,C,C,1,No Deposit,66,NULL,0,Contract,172.52,0,0,Check-Out,2017-02-14,gold
+Resort Hotel,1,79,2015,September,38,17,2,1,1,0,0,BB,GMB,Online TA,Corporate,0,0,0,F,F,1,No Deposit,55,NULL,0,Group,151.17,0,1,Canceled,2015-07-21,gold
+City Hotel,1,137,2016,April,15,11,0,2,2,0,0,BB,DJI,Offline TA/TO,Direct,0,0,1,B,B,1,Non Refund,307,NULL,0,Group,197.87,1,0,Canceled,2016-02-17,gold
+City Hotel,0,162,2016,October,39,1,1,2,2,0,1,HB,STP,Online TA,Direct,0,0,0,E,E,1,No Deposit,469,NULL,0,Transient,155.95,1,0,Check-Out,2016-10-04,gold
+Resort Hotel,0,333,2016,November,45,9,2,0,2,0,0,HB,CAF,Corporate,Direct,0,0,0,F,F,2,No Deposit,216,NULL,0,Contract,80.30,0,2,Check-Out,2016-11-11,gold
+Resort Hotel,0,397,2016,December,50,16,0,2,1,0,0,BB,ISL,Groups,Direct,0,0,0,G,G,2,Non Refund,345,NULL,0,Transient,83.68,0,0,Check-Out,2016-12-18,gold
+Resort Hotel,1,187,2015,September,37,7,2,2,2,0,0,BB,AFG,Corporate,Corporate,0,0,0,C,C,1,No Deposit,393,NULL,0,Contract,78.93,0,1,Canceled,2015-07-25,gold
+City Hotel,0,209,2017,May,18,3,0,1,2,0,0,BB,AUS,Corporate,TA/TO,0,0,0,A,A,1,No Deposit,NULL,NULL,0,Contract,104.22,0,1,Check-Out,2017-05-04,gold
+City Hotel,0,365,2017,May,19,8,1,5,1,1,0,SC,NLD,Offline TA/TO,Direct,0,0,1,C,C,0,No Deposit,47,NULL,0,Contract,194.67,0,1,Check-Out,2017-05-14,gold
+City Hotel,1,308,2016,July,28,14,2,1,2,0,0,BB,STP,Corporate,GDS,0,0,0,F,F,0,No Deposit,262,NULL,0,Group,167.34,0,1,Canceled,2015-09-30,gold
+Resort Hotel,0,318,2016,August,34,23,2,1,2,0,0,BB,DZA,Offline TA/TO,TA/TO,0,0,0,B,B,2,No Deposit,85,NULL,0,Group,241.29,0,0,Check-Out,2016-08-26,gold
+City Hotel,1,152,2015,December,51,15,0,0,2,0,0,BB,STP,Groups,Direct,0,0,0,D,D,1,No Deposit,398,NULL,0,Contract,0.00,0,0,Canceled,2015-12-05,gold
+City Hotel,1,306,2016,November,47,22,2,5,2,0,0,BB,UKR,Online TA,Direct,0,0,0,G,G,2,No Deposit,218,NULL,0,Transient,85.49,0,2,Canceled,2016-05-07,gold
+City Hotel,0,14,2016,January,1,4,1,3,2,0,0,BB,GRC,Groups,Corporate,0,0,0,F,F,1,Non Refund,294,NULL,0,Transient,144.83,1,1,Check-Out,2016-01-08,gold
+Resort Hotel,0,283,2016,June,23,6,1,4,1,0,0,BB,BWA,Offline TA/TO,TA/TO,0,0,0,A,A,2,Refundable,363,NULL,0,Transient-Party,72.40,0,2,Check-Out,2016-06-11,gold
+City Hotel,0,136,2017,August,34,23,0,3,2,0,0,FB,TZA,Corporate,Corporate,0,0,0,E,E,2,No Deposit,288,NULL,0,Contract,235.92,0,1,Check-Out,2017-08-26,gold
+City Hotel,1,212,2016,March,11,18,1,1,2,0,0,BB,LKA,Corporate,Corporate,1,0,0,G,G,1,No Deposit,303,NULL,0,Contract,87.85,1,2,Canceled,2015-09-19,gold
+Resort Hotel,0,219,2016,September,36,6,0,2,2,0,0,BB,NLD,Direct,TA/TO,0,0,0,F,F,1,No Deposit,10,NULL,0,Contract,82.59,0,2,Check-Out,2016-09-08,gold
+City Hotel,0,241,2015,August,32,6,0,3,2,0,0,BB,COG,Groups,TA/TO,0,1,0,G,G,2,Non Refund,381,96,0,Contract,48.94,0,0,Check-Out,2015-08-09,gold
+City Hotel,0,255,2016,October,43,27,1,2,2,0,0,BB,BTN,Direct,TA/TO,0,0,0,E,E,1,Non Refund,49,NULL,0,Transient,195.35,0,2,Check-Out,2016-10-30,gold
+City Hotel,0,49,2016,January,1,7,1,5,1,0,0,BB,BWA,Offline TA/TO,Corporate,0,0,0,B,B,1,No Deposit,126,NULL,0,Contract,247.34,0,0,Check-Out,2016-01-13,gold
+City Hotel,1,53,2015,October,43,20,0,4,2,0,0,BB,GRC,Groups,TA/TO,0,0,0,E,E,2,No Deposit,405,NULL,0,Contract,69.36,0,1,Canceled,2015-10-18,gold
+City Hotel,1,313,2017,May,18,5,1,0,2,0,0,BB,URY,Groups,Corporate,0,1,0,F,F,0,No Deposit,256,NULL,5,Transient-Party,44.68,0,0,Canceled,2017-02-17,gold
+City Hotel,1,394,2015,October,42,12,2,5,3,0,0,BB,UKR,Groups,GDS,0,0,1,A,A,0,No Deposit,NULL,NULL,0,Transient,59.05,0,1,Canceled,2015-06-30,gold
+City Hotel,0,202,2015,November,47,21,1,1,2,0,0,SC,PRT,Online TA,Corporate,0,0,0,C,C,1,No Deposit,453,NULL,0,Group,190.52,0,2,Check-Out,2015-11-23,gold
+Resort Hotel,1,44,2017,August,34,23,1,0,2,0,0,BB,AFG,Offline TA/TO,Direct,0,0,0,C,C,2,No Deposit,NULL,NULL,0,Transient-Party,77.36,0,1,Canceled,2017-07-31,gold
+Resort Hotel,0,319,2017,August,34,21,0,3,2,0,0,HB,AUS,Corporate,Direct,0,0,0,D,D,0,No Deposit,NULL,NULL,0,Group,202.53,0,1,Check-Out,2017-08-24,gold
+City Hotel,1,165,2016,March,13,31,0,5,2,0,0,BB,ARG,Groups,Direct,0,0,0,C,C,0,No Deposit,242,NULL,0,Group,134.13,0,1,Canceled,2015-10-22,gold
+City Hotel,0,370,2017,August,31,3,0,0,2,0,0,BB,FJI,Groups,TA/TO,0,0,0,D,D,2,No Deposit,NULL,NULL,0,Transient-Party,0.00,0,0,Check-Out,2017-08-03,gold
+City Hotel,0,177,2015,October,40,4,1,2,2,0,0,BB,VCT,Direct,GDS,0,0,0,F,F,2,No Deposit,208,NULL,0,Contract,61.87,1,0,Check-Out,2015-10-07,gold
+City Hotel,1,262,2015,October,40,1,1,3,2,0,0,BB,ITA,Offline TA/TO,Corporate,0,0,0,G,G,1,No Deposit,346,NULL,0,Contract,239.47,0,0,Canceled,2015-06-18,gold
+Resort Hotel,0,364,2017,August,31,2,0,5,3,0,0,BB,ARG,Groups,TA/TO,0,0,0,F,F,2,No Deposit,262,NULL,0,Group,130.11,0,0,Check-Out,2017-08-07,gold
+City Hotel,0,8,2017,May,19,10,1,2,1,0,0,BB,CAF,Direct,Corporate,0,0,0,B,B,1,No Deposit,NULL,NULL,0,Group,187.79,0,2,Check-Out,2017-05-13,gold
+City Hotel,0,174,2015,December,51,14,1,5,2,0,0,BB,GRD,Online TA,Direct,0,0,0,D,D,1,No Deposit,NULL,NULL,0,Group,149.56,0,1,Check-Out,2015-12-20,gold
+City Hotel,0,8,2017,May,19,10,1,2,1,0,0,BB,CAF,Direct,Corporate,0,0,0,B,B,1,No Deposit,NULL,NULL,0,Group,187.79,0,2,Check-Out,2017-05-13,gold
+Resort Hotel,0,284,2016,July,28,16,0,5,1,0,0,BB,BWA,Online TA,Corporate,0,0,0,C,C,0,No Deposit,426,NULL,0,Transient-Party,49.95,0,0,Check-Out,2016-07-21,gold
+City Hotel,0,184,2016,November,47,24,0,0,1,0,0,BB,URY,Groups,TA/TO,0,0,0,D,D,1,No Deposit,239,NULL,0,Transient-Party,0.00,0,1,Check-Out,2016-11-24,gold
+Resort Hotel,0,321,2015,August,33,12,1,4,2,0,0,BB,URY,Groups,Direct,0,0,0,C,C,0,No Deposit,NULL,NULL,0,Group,145.95,0,2,Check-Out,2015-08-17,gold
+City Hotel,1,21,2017,May,18,3,2,4,2,0,0,BB,MNE,Direct,TA/TO,0,0,0,F,F,0,No Deposit,318,271,0,Transient-Party,189.08,0,0,Canceled,2017-04-29,gold

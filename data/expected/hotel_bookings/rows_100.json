@@ -1,0 +1,92 @@
+{
+  "dataset": "hotel_bookings",
+  "rows": 100,
+  "seed": 42,
+  "clean": {
+    "hotel_bookings": {
+      "source_rows": 100,
+      "rejected": 0,
+      "target_rows": 100,
+      "flagged_duplicates": 5,
+      "zero_night_stays": 8,
+      "adr_total": 13781.56,
+      "cancellations": 36,
+      "guests_total": 184,
+      "nights_total": 372,
+      "estimated_value_total": 55760.5
+    }
+  },
+  "dirty": {
+    "hotel_bookings": {
+      "source_rows": 108,
+      "rejected": 8,
+      "rejected_by_rule": {
+        "unknown_reservation_status": 1,
+        "malformed_row": 1,
+        "invalid_arrival_date": 1,
+        "cancel_status_mismatch": 1,
+        "invalid_type:lead_time": 1,
+        "negative_adr": 1,
+        "missing_required:hotel": 1,
+        "zero_guests": 1
+      },
+      "malformed": 1,
+      "target_rows": 100,
+      "flagged_duplicates": 5,
+      "zero_night_stays": 8,
+      "adr_total": 13781.56,
+      "cancellations": 36,
+      "guests_total": 184,
+      "nights_total": 372,
+      "estimated_value_total": 55760.5
+    }
+  },
+  "defect_rows": {
+    "hotel_bookings": [
+      {
+        "source_row_number": 11,
+        "expected_rule": "unknown_reservation_status"
+      },
+      {
+        "source_row_number": 15,
+        "expected_rule": "malformed_row"
+      },
+      {
+        "source_row_number": 32,
+        "expected_rule": "invalid_arrival_date"
+      },
+      {
+        "source_row_number": 46,
+        "expected_rule": "cancel_status_mismatch"
+      },
+      {
+        "source_row_number": 75,
+        "expected_rule": "invalid_type:lead_time"
+      },
+      {
+        "source_row_number": 78,
+        "expected_rule": "negative_adr"
+      },
+      {
+        "source_row_number": 85,
+        "expected_rule": "missing_required:hotel"
+      },
+      {
+        "source_row_number": 103,
+        "expected_rule": "zero_guests"
+      }
+    ]
+  },
+  "late": {
+    "hotel_bookings": {
+      "target_rows": 2,
+      "flagged_duplicates": 0,
+      "zero_night_stays": 1,
+      "adr_total": 108.65,
+      "cancellations": 1,
+      "guests_total": 2,
+      "nights_total": 3,
+      "estimated_value_total": 325.95
+    }
+  }
+}

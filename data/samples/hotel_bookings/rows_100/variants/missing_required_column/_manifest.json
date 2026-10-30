@@ -1,0 +1,6 @@
+{
+  "origin": "synthetic",
+  "dataset": "hotel_bookings",
+  "rows": 100,
+  "seed": 42
+}

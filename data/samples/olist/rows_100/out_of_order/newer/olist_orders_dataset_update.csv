@@ -1,0 +1,2 @@
+order_id,customer_id,order_status,order_purchase_timestamp,order_approved_at,order_delivered_carrier_date,order_delivered_customer_date,order_estimated_delivery_date
+7b9b436cd2670e815ed7c9ef51f5e820,fdc2135bf8f98f552f00cfd5ac1a8e2f,delivered,2017-01-25 15:32:00,2017-01-26 18:32:00,2017-01-27 18:32:00,2019-03-12 00:00:00,2017-02-12 00:00:00

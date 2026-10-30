@@ -1,0 +1,2 @@
+order_id,customer_id,order_status,order_purchase_timestamp,order_approved_at,order_delivered_carrier_date,order_delivered_customer_date,order_estimated_delivery_date
+700222efe9d1fc20c453a88ab5a28d14,7c8d64370dc2516117869e59a3b66957,invoiced,2018-12-02 00:00:00,,,,2018-12-02 00:00:00

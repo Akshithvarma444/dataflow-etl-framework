@@ -1,0 +1,112 @@
+# Contract for the Hotel Booking Demand dataset. Rules and counts in comments were
+# verified against the real file: see reports/source_profile.json.
+dataset: hotel_bookings
+version: 1 # bump when transformer logic changes, so unchanged files are reprocessed
+db_schema: hotel
+description: City and resort hotel bookings, 2015-07 to 2017-08.
+default_source_dir: data/raw/hotel_bookings
+transformer: src.transformers.hotel_transformer:HotelTransformer
+
+tables:
+  - name: hotel_bookings
+    description: One row per source row. The source has no booking ID.
+    grain: One booking record per source row.
+    source:
+      pattern: "hotel_bookings*.csv"
+      format: csv
+      on_unexpected_column: warn
+    primary_key: [record_id]
+    record_id_column: record_id
+    duplicates:
+      # 31,994 rows are exact copies, but with no booking ID they may be real separate
+      # bookings (block reservations), so they load and are flagged, never dropped.
+      policy: flag
+      fingerprint_column: record_fingerprint
+      occurrence_column: duplicate_occurrence
+    load:
+      strategy: replace_source
+    columns:
+      - {name: hotel, type: text, required: true, description: "Hotel type."}
+      - {name: is_canceled, type: integer, required: true, description: "1 if canceled or no-show, else 0."}
+      - {name: lead_time, type: integer, required: true, description: "Days between booking and arrival."}
+      - {name: arrival_date_year, type: integer, required: true, description: "Arrival year."}
+      - {name: arrival_date_month, type: text, required: true, description: "Arrival month name."}
+      - {name: arrival_date_week_number, type: integer, required: true, description: "Source week number. Not ISO: differs on 64,054 rows, so not validated."}
+      - {name: arrival_date_day_of_month, type: integer, required: true, description: "Arrival day."}
+      - {name: stays_in_weekend_nights, type: integer, required: true, description: "Weekend nights booked."}
+      - {name: stays_in_week_nights, type: integer, required: true, description: "Week nights booked."}
+      - {name: adults, type: integer, required: true, description: "Adults."}
+      - {name: children, type: integer, null_tokens: ["", "NA"], description: "Children. Literal NA in 4 rows means unknown; stays null."}
+      - {name: babies, type: integer, required: true, description: "Babies."}
+      - {name: meal, type: text, required: true, description: "Meal code as supplied."}
+      - {name: country, type: text, null_tokens: ["", "NULL"], description: "Country code as supplied, mostly ISO-3. Literal NULL in 488 rows."}
+      - {name: market_segment, type: text, required: true, description: "Market segment."}
+      - {name: distribution_channel, type: text, required: true, description: "Booking channel."}
+      - {name: is_repeated_guest, type: integer, required: true, description: "1 if a repeat guest."}
+      - {name: previous_cancellations, type: integer, required: true, description: "Earlier cancellations by this guest."}
+      - {name: previous_bookings_not_canceled, type: integer, required: true, description: "Earlier completed bookings."}
+      - {name: reserved_room_type, type: text, required: true, description: "Reserved room code."}
+      - {name: assigned_room_type, type: text, required: true, description: "Assigned room code."}
+      - {name: booking_changes, type: integer, required: true, description: "Amendments before check-in or cancellation."}
+      - {name: deposit_type, type: text, required: true, description: "Deposit type."}
+      - {name: agent, type: text, null_tokens: ["", "NULL"], description: "Anonymized agent ID. Literal NULL in 16,340 rows."}
+      - {name: company, type: text, null_tokens: ["", "NULL"], description: "Anonymized company ID. Literal NULL in 112,593 rows."}
+      - {name: days_in_waiting_list, type: integer, required: true, description: "Days on the waiting list."}
+      - {name: customer_type, type: text, required: true, description: "Customer type."}
+      - {name: adr, type: decimal, required: true, description: "Average daily rate, in the source's unstated currency."}
+      - {name: required_car_parking_spaces, type: integer, required: true, description: "Parking spaces requested."}
+      - {name: total_of_special_requests, type: integer, required: true, description: "Special requests."}
+      - {name: reservation_status, type: text, required: true, description: "Final status."}
+      - {name: reservation_status_date, type: date, required: true, description: "Date of the final status."}
+    derived_columns:
+      - {name: record_id, type: text, required: true, description: "SHA-256 of source file name and row number. An ingestion ID, not a business key."}
+      - {name: record_fingerprint, type: text, required: true, description: "SHA-256 of all source values, for exact-duplicate detection."}
+      - {name: duplicate_occurrence, type: integer, required: true, description: "1 for the first occurrence of a fingerprint in a file, then 2, 3..."}
+      - {name: arrival_date, type: date, required: true, description: "Built from the arrival year, month name, and day."}
+      - {name: booking_date, type: date, required: true, description: "arrival_date minus lead_time."}
+      - {name: total_nights, type: integer, required: true, description: "Weekend plus week nights. 0 is a day-use stay."}
+      - {name: total_guests, type: integer, required: true, description: "Adults + children + babies, unknown children counted as 0."}
+      - {name: meal_plan, type: text, required: true, description: "meal with Undefined mapped to SC: the source paper treats both as no meal package."}
+      - {name: estimated_booking_value, type: decimal, required: true, description: "adr * total_nights, what the stay was priced at, including canceled bookings. Not revenue."}
+      - {name: realized_booking_value, type: decimal, required: true, description: "estimated_booking_value if not canceled, else 0. Ignores deposits and fees."}
+    rules:
+      - {name: negative_adr, check: range, column: adr, min: 0, severity: error}
+      - {name: invalid_is_canceled, check: range, column: is_canceled, min: 0, max: 1, severity: error}
+      - {name: invalid_is_repeated_guest, check: range, column: is_repeated_guest, min: 0, max: 1, severity: error}
+      - {name: negative_lead_time, check: range, column: lead_time, min: 0, severity: error}
+      - {name: negative_weekend_nights, check: range, column: stays_in_weekend_nights, min: 0, severity: error}
+      - {name: negative_week_nights, check: range, column: stays_in_week_nights, min: 0, severity: error}
+      - {name: negative_adults, check: range, column: adults, min: 0, severity: error}
+      - {name: negative_children, check: range, column: children, min: 0, severity: error}
+      - {name: negative_babies, check: range, column: babies, min: 0, severity: error}
+      - {name: unknown_hotel, check: allowed_values, column: hotel, values: ["City Hotel", "Resort Hotel"], severity: error}
+      - {name: unknown_reservation_status, check: allowed_values, column: reservation_status, values: ["Check-Out", "Canceled", "No-Show"], severity: error}
+      - {name: invalid_arrival_date, check: custom, severity: error, message: "Arrival year, month, and day do not form a real date."}
+      - {name: zero_guests, check: custom, severity: error, message: "A booking for nobody (180 real rows)."}
+      - {name: cancel_status_mismatch, check: custom, severity: error, message: "is_canceled disagrees with reservation_status (0 real rows)."}
+      - {name: zero_night_stay, check: custom, severity: warning, message: "Day use: 680 of 715 real rows checked out, all at ADR 0, so legitimate."}
+      - {name: high_adr, check: range, column: adr, max: 1000, severity: warning, message: "Extreme rate (1 real row, 5400)."}
+      - {name: large_party, check: custom, severity: warning, message: "More than 10 guests on one booking."}
+      - {name: checkout_date_mismatch, check: custom, severity: warning, message: "Check-out status date is not arrival + nights (27 real rows)."}
+      - {name: unknown_meal, check: allowed_values, column: meal, values: [BB, HB, FB, SC, Undefined], severity: warning}
+      - {name: country_code_format, check: regex, column: country, pattern: "[A-Z]{2,3}", severity: warning}
+    aggregates:
+      - {name: adr_total, target_expression: "sum(adr)", source_columns: [adr]}
+      - {name: cancellations, target_expression: "sum(is_canceled)", source_columns: [is_canceled]}
+      - {name: guests_total, target_expression: "sum(total_guests)", source_columns: [adults, children, babies]}
+      - {name: nights_total, target_expression: "sum(total_nights)", source_columns: [stays_in_weekend_nights, stays_in_week_nights]}
+    indexes:
+      - [source_file]
+      - [record_fingerprint]
+      - [arrival_date]
+
+checks:
+  - name: total_nights_formula
+    description: total_nights always equals its two source columns.
+    sql: "SELECT count(*) FROM hotel.hotel_bookings WHERE total_nights <> stays_in_weekend_nights + stays_in_week_nights"
+  - name: total_guests_formula
+    description: total_guests always equals adults + children + babies, unknown children as 0.
+    sql: "SELECT count(*) FROM hotel.hotel_bookings WHERE total_guests <> adults + coalesce(children, 0) + babies"
+  - name: canceled_status_consistent
+    description: Every canceled booking has a canceled or no-show status, and vice versa.
+    sql: "SELECT count(*) FROM hotel.hotel_bookings WHERE (is_canceled = 1) <> (reservation_status IN ('Canceled', 'No-Show'))"
