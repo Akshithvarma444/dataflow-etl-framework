@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.git/
+.sf/
+.claude/
+.venv/
+venv/
+data/
+logs/
+reports/
+htmlcov/
+.pytest_cache/
+.coverage
+**/__pycache__/

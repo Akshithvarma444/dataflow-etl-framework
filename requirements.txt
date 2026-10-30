@@ -1,0 +1,10 @@
+pandas==3.1.0
+numpy==2.5.4
+pydantic==2.14.2
+SQLAlchemy==2.1.6
+psycopg[binary]==3.3.6
+PyYAML==6.0.3
+python-dotenv==1.2.4
+Faker==40.44.0
+pytest==9.2.0
+pytest-cov==7.1.0

@@ -1,0 +1,24 @@
+# Framework-wide settings. Credentials never live here: see .env.example.
+# Relative paths resolve from the repository root.
+
+paths:
+  raw_dir: data/raw
+  samples_dir: data/samples
+  generated_dir: data/generated
+  expected_dir: data/expected
+  processed_dir: data/processed
+  rejected_dir: data/rejected
+  reports_dir: reports
+  logs_dir: logs
+  datasets_config_dir: config/datasets
+
+pipeline:
+  batch_size: 50000 # rows per extraction chunk and database write
+  max_retries: 3 # attempts for transient database errors only
+  retry_backoff_seconds: 2.0 # doubled after each failed attempt
+
+logging:
+  level: INFO
+
+generator:
+  seed: 42
