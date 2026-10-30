@@ -4,6 +4,7 @@ Integration tests use only the dedicated POSTGRES_TEST_DB database. They are ski
 the reason shown, if it cannot be reached: start it with `docker compose up -d db`.
 """
 
+import os
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
@@ -72,7 +73,10 @@ def db_engine(settings: Settings) -> Iterator[Engine]:
     try:
         ensure_database(settings.database, settings.database.name)
     except OperationalError as exc:
-        pytest.skip(f"Test database unreachable, run `docker compose up -d db`: {exc.orig}")
+        message = f"Test database unreachable, run `docker compose up -d db`: {exc.orig}"
+        if os.environ.get("DATAFLOW_REQUIRE_DB"):
+            pytest.fail(message)
+        pytest.skip(message)
     engine = create_db_engine(settings.database)
     yield engine
     engine.dispose()

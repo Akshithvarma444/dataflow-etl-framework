@@ -12,9 +12,12 @@ import time
 from pathlib import Path
 
 import pandas as pd
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from src.core.config import Settings
 from src.core.contract import DatasetContract, load_contract
+from src.core.exceptions import DataFlowError
 from src.database.connection import create_db_engine, ensure_database
 from src.extractors import create_extractor
 from src.generators.data_generator import generate_dataset
@@ -98,6 +101,18 @@ def _compare_serialization(contract: DatasetContract, source_dir: Path, largest:
     return comparisons
 
 
+def _drop_database(settings: Settings, database: str) -> None:
+    """Repeated full loads write several GB, so the disk space is given back afterwards."""
+    admin = create_db_engine(settings.database, name="postgres").execution_options(isolation_level="AUTOCOMMIT")
+    try:
+        with admin.connect() as conn:
+            conn.execute(text(f'DROP DATABASE IF EXISTS "{database}" WITH (FORCE)'))
+    except SQLAlchemyError as exc:
+        logger.warning("Could not drop %s: %s", database, exc)
+    finally:
+        admin.dispose()
+
+
 def run_benchmark(settings: Settings, dataset: str, sizes: list[int]) -> Path:
     """Measure each size, reruns of the largest, and COPY against row-at-a-time staging."""
     database = f"{settings.database.name}_perf"
@@ -134,6 +149,11 @@ def run_benchmark(settings: Settings, dataset: str, sizes: list[int]) -> Path:
         serialization = _compare_serialization(contract, source(largest), largest)
     finally:
         engine.dispose()
+        _drop_database(settings, database)
+
+    failed = [row["scenario"] for row in rows if "failed" in row["statuses"]]
+    if failed:
+        raise DataFlowError(f"Benchmark of {dataset} had failed runs in {failed}; no report written. See the log.")
 
     output = settings.paths.reports_dir / f"performance_{dataset}.json"
     output.parent.mkdir(parents=True, exist_ok=True)

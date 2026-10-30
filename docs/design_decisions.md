@@ -85,16 +85,21 @@ A child whose parent has not arrived is quarantined with `fk_violation`. Each ru
 then retries open rejections whose only failure is a missing parent, and marks those that now pass with
 `resolved_at`. Rows also rejected for another reason stay in quarantine. Nothing else needs reprocessing.
 
-**D16. Reconciliation runs before commit and can block it.**
-Source totals come from raw text before validation, independent of transformation. A difference nothing
-explains raises an error and rolls back, so a transformation bug cannot publish wrong numbers. A difference
-is explained only by a known cause, such as rows that were already present under another file name.
-`scripts/verify_real_data.py` adds a second check that shares no code with the pipeline.
+**D16. Reconciliation runs before commit and can block it, and says when it cannot compare.**
+Source totals come from raw text before validation, independent of transformation. A difference raises an
+error and rolls back, so a transformation bug cannot publish wrong numbers. A total can only be compared when
+the target rows attributed to this run's files are exactly the rows it accepted. After a partial re-delivery
+they are not, and the status is `not_comparable` with the reason. An earlier version reported such cases as
+"explained", but a review showed that one skipped row could excuse a difference of any size.
+*Cost:* those runs have no aggregate check, only the row-count identity and the SQL checks. They say so
+plainly in the report. `scripts/verify_real_data.py` adds a second check using none of the pipeline's validation, transformation, or loading code.
 
-**D17. A zero-byte file fails, but a header-only file is an empty batch.**
+**D17. A zero-byte file fails, a header-only file is an empty batch, and large deletions are refused.**
 A zero-byte file suggests a broken delivery, so it stops the run. A header-only file is a valid delivery with
-nothing in it. It succeeds with zero rows and, importantly, does not trigger snapshot deletion, or a
-truncated hotel file would wipe its bookings.
+nothing in it: it succeeds with zero rows and deletes nothing. A new version that would remove more than
+`max_delete_fraction` (default 50%) of a file's loaded rows fails the run, because it looks like a truncated or
+mostly invalid delivery, and `--full-refresh` is the way to say it is intended. *Cost:* a genuinely much smaller
+file needs that explicit step.
 
 **D18. Restoring an earlier file version is treated as a change.**
 The skip check compares with the *latest* load of a file, not any earlier one. Otherwise, loading version A, then
@@ -110,6 +115,22 @@ default, with `on_unexpected_column: fail` available per table. Rejected rows ke
 **D14. Default host port 5434, bound to loopback.**
 5432 and 5433 are commonly taken on developer machines, and loopback binding keeps the database
 off the network. `POSTGRES_PORT` changes it.
+
+**D20. Processing a file closes its open rejections, and recovery never overwrites.**
+A new version of a file replaces what the old version said, so its open rejections close as `superseded` before
+it is read. Anything still wrong is rejected again, which reopens it. Recovery only inserts: if the key has since
+arrived another way, that newer row wins and the rejection closes as `superseded`. Both rules exist because a
+review showed that a stale quarantined row could otherwise overwrite a correction. Closed rejections are kept as a
+record of what was received.
+
+**D21. Values are rejected rather than altered to fit.**
+A decimal with more places than `numeric(14,2)` holds is rejected, because PostgreSQL would round it without an
+error. Hotel stays and lead times over ten years are rejected, because they would overflow date arithmetic. The
+real maximums are 19 weekend nights, 50 week nights, and a 737-day lead time.
+
+**D22. Collapsed tables accept one source file.**
+A `duplicate_count` describes one file. Across several, neither overwriting nor summing would be right, since a
+rerun would then double-count. Rather than store a wrong number, a second file fails the run with a clear message.
 
 **D15. Dependencies are pinned to exact versions** that were installed and tested, so a clean
 environment gets the same behavior.

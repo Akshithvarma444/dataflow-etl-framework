@@ -1,0 +1,195 @@
+{
+  "checks": 27,
+  "failed": 0,
+  "results": [
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT count(*) FROM hotel.hotel_bookings",
+      "expected_from_raw_file": 119209,
+      "actual_in_database": 119209.0,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT count(*) FROM ops.rejected_records WHERE dataset_name = 'hotel_bookings' AND resolved_at IS NULL",
+      "expected_from_raw_file": 181,
+      "actual_in_database": 181.0,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT sum(is_canceled) FROM hotel.hotel_bookings",
+      "expected_from_raw_file": 44199,
+      "actual_in_database": 44199.0,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT sum(total_guests) FROM hotel.hotel_bookings",
+      "expected_from_raw_file": 234986,
+      "actual_in_database": 234986.0,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT sum(total_nights) FROM hotel.hotel_bookings",
+      "expected_from_raw_file": 408433,
+      "actual_in_database": 408433.0,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT sum(adr) FROM hotel.hotel_bookings",
+      "expected_from_raw_file": 12155741.81,
+      "actual_in_database": 12155741.81,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT sum(estimated_booking_value) FROM hotel.hotel_bookings",
+      "expected_from_raw_file": 42714213.15,
+      "actual_in_database": 42714213.15,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT count(*) FROM hotel.hotel_bookings WHERE duplicate_occurrence > 1",
+      "expected_from_raw_file": 31980,
+      "actual_in_database": 31980.0,
+      "match": true
+    },
+    {
+      "dataset": "hotel_bookings",
+      "query": "SELECT count(*) FROM hotel.hotel_bookings WHERE total_nights = 0",
+      "expected_from_raw_file": 645,
+      "actual_in_database": 645.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.orders",
+      "expected_from_raw_file": 99441,
+      "actual_in_database": 99441.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(DISTINCT order_id) FROM olist.order_items",
+      "expected_from_raw_file": 98666,
+      "actual_in_database": 98666.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.order_items",
+      "expected_from_raw_file": 112650,
+      "actual_in_database": 112650.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.payments",
+      "expected_from_raw_file": 103886,
+      "actual_in_database": 103886.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.reviews",
+      "expected_from_raw_file": 99224,
+      "actual_in_database": 99224.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.customers",
+      "expected_from_raw_file": 99441,
+      "actual_in_database": 99441.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.products",
+      "expected_from_raw_file": 32951,
+      "actual_in_database": 32951.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.sellers",
+      "expected_from_raw_file": 3095,
+      "actual_in_database": 3095.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.geolocation",
+      "expected_from_raw_file": 738332,
+      "actual_in_database": 738332.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT sum(duplicate_count) FROM olist.geolocation",
+      "expected_from_raw_file": 1000163,
+      "actual_in_database": 1000163.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT sum(price) FROM olist.order_items",
+      "expected_from_raw_file": 13591643.7,
+      "actual_in_database": 13591643.7,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT sum(freight_value) FROM olist.order_items",
+      "expected_from_raw_file": 2251909.54,
+      "actual_in_database": 2251909.54,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT sum(payment_value) FROM olist.payments",
+      "expected_from_raw_file": 16008872.12,
+      "actual_in_database": 16008872.12,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT sum(items_total) FROM olist.order_summary",
+      "expected_from_raw_file": 13591643.7,
+      "actual_in_database": 13591643.7,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT sum(payment_total) FROM olist.order_summary",
+      "expected_from_raw_file": 16008872.12,
+      "actual_in_database": 16008872.12,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.order_summary",
+      "expected_from_raw_file": 99441,
+      "actual_in_database": 99441.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.order_summary WHERE item_count = 0",
+      "expected_from_raw_file": 775,
+      "actual_in_database": 775.0,
+      "match": true
+    },
+    {
+      "dataset": "olist",
+      "query": "SELECT count(*) FROM olist.order_summary WHERE payment_matches_order = 0",
+      "expected_from_raw_file": 260,
+      "actual_in_database": 260.0,
+      "match": true
+    }
+  ]
+}

@@ -4,11 +4,15 @@ Passing tests only mean something if they would fail on wrong code. Each mutatio
 plausible real bug. It is applied to the source, the relevant tests run, and the file is
 restored whatever happens. Output: reports/mutation_check.json.
 
+It first confirms the same tests pass on the real code with the database up. Without that, a
+failing mutation run would prove nothing, and skipped tests would look like uncaught bugs.
+
 Usage:
     python scripts/mutation_check.py
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -85,7 +89,20 @@ MUTATIONS = [
 ]
 
 
+def run_tests(tests: str) -> subprocess.CompletedProcess:
+    environment = {**os.environ, "DATAFLOW_REQUIRE_DB": "1"}
+    return subprocess.run([sys.executable, "-m", "pytest", "-q", "-x", "--no-header", "-p", "no:cacheprovider", *tests.split()],
+                          cwd=ROOT, capture_output=True, text=True, env=environment)
+
+
 def main() -> int:
+    all_tests = " ".join(sorted({path for _, _, _, _, tests in MUTATIONS for path in tests.split()}))
+    baseline = run_tests(all_tests)
+    if baseline.returncode != 0:
+        print("Tests do not pass on the real code, so this check would mean nothing. Is the database up?")
+        print("\n".join(baseline.stdout.strip().splitlines()[-5:]))
+        return 2
+
     results = []
     for description, relative, old, new, tests in MUTATIONS:
         path = ROOT / relative
@@ -96,8 +113,7 @@ def main() -> int:
             continue
         try:
             path.write_bytes(text.replace(old, new, 1).encode("utf-8"))
-            run = subprocess.run([sys.executable, "-m", "pytest", "-q", "-x", "--no-header", "-p", "no:cacheprovider", *tests.split()],
-                                 cwd=ROOT, capture_output=True, text=True)
+            run = run_tests(tests)
             lines = run.stdout.strip().splitlines()
             caught = run.returncode == 1
             failing = next((line.split(" - ")[0].replace("FAILED ", "") for line in lines if line.startswith("FAILED")), None)

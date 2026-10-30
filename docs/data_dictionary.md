@@ -99,6 +99,9 @@ One row per source row. The source has no booking ID.
 | `negative_adults` | error | range on adults |  |
 | `negative_children` | error | range on children |  |
 | `negative_babies` | error | range on babies |  |
+| `implausible_lead_time` | error | range on lead_time | Over ten years; the real maximum is 737. |
+| `implausible_weekend_nights` | error | range on stays_in_weekend_nights | Over ten years; the real maximum is 19. |
+| `implausible_week_nights` | error | range on stays_in_week_nights | Over ten years; the real maximum is 50. |
 | `unknown_hotel` | error | allowed_values on hotel |  |
 | `unknown_reservation_status` | error | allowed_values on reservation_status |  |
 | `invalid_arrival_date` | error | custom on custom logic | Arrival year, month, and day do not form a real date. |
