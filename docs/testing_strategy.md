@@ -13,7 +13,8 @@ python scripts/verify_real_data.py          # compare real runs with the raw fil
 
 Integration tests only touch `POSTGRES_TEST_DB`, which is created on demand. Each test starts by dropping
 the `hotel`, `olist`, and `ops` schemas in that database, and never touches `POSTGRES_DB`. If the database
-cannot be reached, those tests are skipped with the reason shown, so check the summary line for skips.
+cannot be reached, those tests are skipped with the reason shown, so check the summary line for skips. Set
+`DATAFLOW_REQUIRE_DB=1` to make that a failure instead, which `scripts/mutation_check.py` always does.
 
 ## Four layers of evidence
 
