@@ -1,0 +1,50 @@
+Execution inside Docker. Commands and their output tail.
+
+$ docker build --progress=plain --secret <local CA> -t dataflow-pipeline .
+exit code: 0
+
+$ docker compose --profile job config --quiet
+exit code: 0
+
+
+$ docker compose run --rm -T -e POSTGRES_DB=dataflow_docker pipeline --dataset hotel_bookings
+exit code: 0
+08:31:48 INFO    Run started
+08:32:03 INFO    hotel_bookings.csv processed: 119390 rows
+08:32:03 INFO    Run finished: success_with_rejects
+
+hotel_bookings: success_with_rejects  run_id=221a95a3-017b-4255-ba13-3876f7f59b72
+  input=119390 valid=119209 rejected=181 inserted=119209 updated=0 unchanged=0 stale=0 deleted=0 failed=0
+  15.20s, 7,852 rows/s, peak 305 MB
+  report: /app/reports/runs/hotel_bookings_20261031T083148Z_221a95a3-017b-4255-ba13-3876f7f59b72.json
+
+$ docker compose run --rm -T -e POSTGRES_DB=dataflow_docker pipeline --dataset hotel_bookings
+exit code: 0
+08:32:10 INFO    hotel_bookings.csv unchanged, skipped
+08:32:10 INFO    Every source file is unchanged; nothing to do
+08:32:10 INFO    Run finished: skipped
+
+hotel_bookings: skipped  run_id=eb93d565-ca9c-4518-bf86-9d4c822ce51c
+  input=0 valid=0 rejected=0 inserted=0 updated=0 unchanged=0 stale=0 deleted=0 failed=0
+  0.39s, 0 rows/s, peak 0 MB
+  report: /app/reports/runs/hotel_bookings_20261031T083209Z_eb93d565-ca9c-4518-bf86-9d4c822ce51c.json
+
+$ docker compose run --rm -T -e POSTGRES_DB=dataflow_docker pipeline --dataset olist --source-dir data/samples/olist/rows_100/dirty
+exit code: 0
+08:32:16 INFO    olist_order_payments_dataset.csv processed: 110 rows
+08:32:16 INFO    olist_order_reviews_dataset.csv processed: 101 rows
+08:32:17 INFO    Run finished: success_with_rejects
+
+olist: success_with_rejects  run_id=d4a7767e-24f5-419e-b448-abad5435f6ec
+  input=803 valid=721 rejected=20 inserted=721 updated=0 unchanged=0 stale=0 deleted=0 failed=0
+  0.96s, 836 rows/s, peak 126 MB
+  report: /app/reports/runs/olist_20261031T083216Z_d4a7767e-24f5-419e-b448-abad5435f6ec.json
+
+$ docker compose run --rm -T -e POSTGRES_DB=dataflow_docker --entrypoint python pipeline -m pytest tests -q --no-header -p no:cacheprovider
+exit code: 0
+Container dataflow-db-1 Running 
+........................................................................ [ 28%]
+........................................................................ [ 57%]
+........................................................................ [ 86%]
+..................................                                       [100%]
+250 passed in 51.55s

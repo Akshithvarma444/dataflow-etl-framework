@@ -12,6 +12,10 @@ FROM ops.pipeline_runs ORDER BY started_at DESC LIMIT 10;
 
 | dataset_name | status | run_mode | data_origin | input_count | valid_count | rejected_count | inserted_count | updated_count | skipped_count | attempts | duration |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| olist | skipped | incremental | source | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 days 00:00:01.603092 |
+| hotel_bookings | skipped | incremental | source | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 days 00:00:01.047263 |
+| olist | skipped | incremental | source | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 days 00:00:03.878089 |
+| hotel_bookings | skipped | incremental | source | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 days 00:00:01.784206 |
 | olist | skipped | incremental | source | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 days 00:00:04.630649 |
 | hotel_bookings | skipped | incremental | source | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 days 00:00:00.232472 |
 | olist | success | incremental | source | 1550922 | 1289091 | 0 | 1289091 | 0 | 0 | 1 | 0 days 00:01:50.457652 |

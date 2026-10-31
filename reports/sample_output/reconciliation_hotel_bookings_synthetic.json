@@ -1,0 +1,135 @@
+{
+  "run_id": "48a9cec1-79ad-4244-b8a4-f5b549cc2c4e",
+  "dataset": "hotel_bookings",
+  "status": "success_with_rejects",
+  "mode": "incremental",
+  "started_at": "2026-10-31T08:36:30.409956+00:00",
+  "finished_at": "2026-10-31T08:36:31.247960+00:00",
+  "attempts": 1,
+  "failure_reason": null,
+  "totals": {
+    "input": 108,
+    "valid": 100,
+    "rejected": 8,
+    "inserted": 100,
+    "updated": 0,
+    "skipped": 0,
+    "stale": 0,
+    "deleted": 0,
+    "failed": 0,
+    "reprocessed": 0,
+    "validation_failure_rate": 0.074074
+  },
+  "performance": {
+    "total_seconds": 0.798,
+    "throughput_rows_per_second": 135.3,
+    "peak_rss_mb": 117.9,
+    "stage_seconds": {
+      "extraction": 0.01,
+      "validation": 0.197,
+      "transformation": 0.017,
+      "loading": 0.084
+    }
+  },
+  "reconciliation": {
+    "tables": {
+      "hotel_bookings": {
+        "files_processed": [
+          "hotel_bookings.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 108,
+        "valid_rows": 100,
+        "rejected_rows": 8,
+        "malformed_rows": 1,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 5,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 100,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 100,
+        "rejected_by_rule": {
+          "cancel_status_mismatch": 2,
+          "invalid_arrival_date": 1,
+          "invalid_type:lead_time": 1,
+          "malformed_row": 1,
+          "missing_required:hotel": 1,
+          "negative_adr": 1,
+          "unknown_reservation_status": 1,
+          "zero_guests": 1
+        },
+        "warnings_by_rule": {
+          "zero_night_stay": 8
+        },
+        "aggregates": [
+          {
+            "name": "adr_total",
+            "source_valid_total": 13781.56,
+            "target_total": 13781.56,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          },
+          {
+            "name": "cancellations",
+            "source_valid_total": 36.0,
+            "target_total": 36.0,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          },
+          {
+            "name": "guests_total",
+            "source_valid_total": 184.0,
+            "target_total": 184.0,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          },
+          {
+            "name": "nights_total",
+            "source_valid_total": 372.0,
+            "target_total": 372.0,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "name": "total_nights_formula",
+        "description": "total_nights always equals its two source columns.",
+        "violations": 0,
+        "status": "pass"
+      },
+      {
+        "name": "total_guests_formula",
+        "description": "total_guests always equals adults + children + babies, unknown children as 0.",
+        "violations": 0,
+        "status": "pass"
+      },
+      {
+        "name": "canceled_status_consistent",
+        "description": "Every canceled booking has a canceled or no-show status, and vice versa.",
+        "violations": 0,
+        "status": "pass"
+      }
+    ]
+  },
+  "schema_notes": {
+    "hotel_bookings": [
+      {
+        "file": "hotel_bookings.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ]
+  }
+}

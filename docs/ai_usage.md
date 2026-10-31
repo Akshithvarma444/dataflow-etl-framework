@@ -25,6 +25,8 @@ These are recorded because they show why the results needed checking rather than
 | Reconciliation's "explained" status could excuse a difference of any size | Independent code review |
 | A stale quarantined row could overwrite a later correction | Independent code review |
 | `--full-refresh --input` emptied a dataset | Independent code review |
+| Benchmarks ran without checking free space, filled drive C, and stopped Docker Desktop and the candidate's other projects | Skipped tests in the next run led to the cause. Reruns then used a disk-space watchdog, and benchmarks now drop their database afterwards |
+| With the database down, tests skipped and the mutation check reported bugs as uncaught | Reading the skip count. It now requires a passing baseline, and makes an unreachable database a failure |
 | A single-run benchmark seemed to show a speedup, then a slowdown, both really noise | Comparing repeated runs; benchmarks now report medians |
 
 The review findings came after 225 tests passed and 15 of 15 deliberate bugs were caught, so those measures alone

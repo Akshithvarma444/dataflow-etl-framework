@@ -4,9 +4,17 @@ A reusable, configuration-driven Python framework that extracts, validates, tran
 datasets into PostgreSQL, with data-quality controls, auditability, operational metrics, and idempotent
 processing. It is demonstrated on two real public datasets with very different shapes.
 
-> **Verification status.** Real-data loads, reconciliation, and independent verification are complete. Still to be rerun on
-> the final code, after a host disk problem stopped Docker: the Olist benchmark, the full test and mutation runs, the pipeline
-> inside Docker, and a clean-clone install. See `reports/` for what exists so far.
+## Evidence at a glance
+
+| Check | Result | Evidence |
+|---|---|---|
+| Automated tests | 250 passed, 93% coverage | [test_results.txt](reports/test_results.txt) |
+| Deliberately broken code | 21 of 21 bugs caught by the tests | [mutation_check.json](reports/mutation_check.json) |
+| Real data against raw files, using none of the pipeline's validation, transformation, or loading code | 27 of 27 figures match | [independent_verification.json](reports/independent_verification.json) |
+| Source-to-target totals | All match, difference 0.00 | [hotel](reports/reconciliation_hotel_bookings_source.json), [Olist](reports/reconciliation_olist_source.json) |
+| Inside Docker | Pipeline ran and 250 tests passed | [docker_execution.txt](reports/docker_execution.txt) |
+| Clean clone | Fresh install ran both samples, and 250 tests passed | Run by hand on Windows, not repeated on other systems |
+| Sample outputs from synthetic data | Published rows, rejects, reconciliation | [reports/sample_output/](reports/sample_output/) |
 
 ## 1. Project overview
 
@@ -111,7 +119,8 @@ non-commercial, which suits this assessment but would need review for commercial
 
 ## 10-12. Installation, configuration, and PostgreSQL
 
-Requires Python 3.12, Docker with Compose, and at least 10 GB free on the drive holding Docker's data.
+Requires Python 3.12, Docker with Compose, and at least 10 GB free on the drive holding Docker's data. That is mainly for
+the benchmarks, whose repeated loads filled the disk on the machine this was built on, and stopped Docker.
 
 ```bash
 python3.12 -m venv .venv            # Windows: py -3.12 -m venv .venv
@@ -306,15 +315,26 @@ recomputed from the raw files, using none of the pipeline's validation, transfor
 Measurements and method: [reports/performance_summary.md](reports/performance_summary.md). Each is a median of repeated
 runs on synthetic data, because single runs on this machine varied more than the effects being measured.
 
-> **Pending:** the summary currently covers hotel bookings. The Olist benchmark was lost when the host disk filled up
-> during the run, and is to be rerun on the final code.
+| Dataset | Requested size | Records | Total | Extract | Validate | Transform | Load | Records/s | Peak memory |
+|---|---|---|---|---|---|---|---|---|---|
+| Hotel | 1,000 | 1,000 | 0.53s | | | | 0.09s | 1,885 | |
+| Hotel | 10,000 | 10,000 | 1.96s | | | | 0.82s | 5,106 | |
+| Hotel | 100,000 | 100,000 | 9.49s | | | | 5.44s | 10,539 | |
+| Olist | 1,000 orders | 7,626 | 1.14s | 0.05s | 0.11s | 0.01s | 0.44s | 6,687 | 122 MB |
+| Olist | 10,000 orders | 75,914 | 4.92s | 0.30s | 0.44s | 0.03s | 3.36s | 15,425 | 144 MB |
+| Olist | 100,000 orders | 759,067 | 77.66s | 6.95s | 12.50s | 0.67s | 54.61s | 9,774 | 213 MB |
+
+Every stage for every size is in the summary, including reruns. A rerun of unchanged files took 0.13s for hotel and 0.96s
+for Olist, which is the time to checksum them. The real Olist files, 1,550,922 rows, loaded in 110s with a 275 MB peak.
 
 **Bottleneck and optimizations.** Loading is the slowest stage. Two changes were measured:
 
 | Optimization | Before | After | Improvement |
 |---|---|---|---|
 | Staging with `COPY` instead of row-at-a-time inserts, hotel load stage, 10,000 rows | 1.29s | 0.41s | 3.2x |
+| The same, Olist load stage, 10,000 orders | 17.93s | 4.71s | 3.8x |
 | Column null mask instead of `pd.isna` per value, hotel, 100,000 rows | 1.25s | 0.79s | 1.6x |
+| The same, Olist geolocation, 100,000 rows | 0.34s | 0.27s | 1.25x |
 
 **Next optimization, not done:** Python-side serialization and hashing still touch every value of every row. Writing
 already-serialized text straight to `COPY`, and hashing with a vectorized method, is the next candidate. It was not

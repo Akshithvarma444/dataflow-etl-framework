@@ -1,10 +1,10 @@
 {
-  "run_id": "933736c2-98ee-4f65-9f7b-12d8d54946b8",
+  "run_id": "221a95a3-017b-4255-ba13-3876f7f59b72",
   "dataset": "hotel_bookings",
   "status": "success_with_rejects",
   "mode": "incremental",
-  "started_at": "2026-10-30T14:19:10.341613+00:00",
-  "finished_at": "2026-10-30T14:19:36.024104+00:00",
+  "started_at": "2026-10-31T08:31:48.360896+00:00",
+  "finished_at": "2026-10-31T08:32:03.571914+00:00",
   "attempts": 1,
   "failure_reason": null,
   "totals": {
@@ -21,14 +21,14 @@
     "validation_failure_rate": 0.001516
   },
   "performance": {
-    "total_seconds": 25.663,
-    "throughput_rows_per_second": 4652.3,
-    "peak_rss_mb": 249.9,
+    "total_seconds": 15.204,
+    "throughput_rows_per_second": 7852.4,
+    "peak_rss_mb": 305.1,
     "stage_seconds": {
-      "extraction": 0.78,
-      "validation": 7.822,
-      "transformation": 0.666,
-      "loading": 15.297
+      "extraction": 1.72,
+      "validation": 4.944,
+      "transformation": 0.338,
+      "loading": 7.176
     }
   },
   "reconciliation": {

@@ -1,0 +1,423 @@
+{
+  "run_id": "b138e410-652a-4e7e-beed-4e7455117d6d",
+  "dataset": "olist",
+  "status": "success_with_rejects",
+  "mode": "incremental",
+  "started_at": "2026-10-31T08:36:33.951623+00:00",
+  "finished_at": "2026-10-31T08:36:34.993133+00:00",
+  "attempts": 1,
+  "failure_reason": null,
+  "totals": {
+    "input": 803,
+    "valid": 721,
+    "rejected": 20,
+    "inserted": 721,
+    "updated": 0,
+    "skipped": 0,
+    "stale": 0,
+    "deleted": 0,
+    "failed": 0,
+    "reprocessed": 0,
+    "validation_failure_rate": 0.024907
+  },
+  "performance": {
+    "total_seconds": 0.956,
+    "throughput_rows_per_second": 840.0,
+    "peak_rss_mb": 118.4,
+    "stage_seconds": {
+      "extraction": 0.026,
+      "validation": 0.083,
+      "transformation": 0.007,
+      "loading": 0.217
+    }
+  },
+  "reconciliation": {
+    "tables": {
+      "geolocation": {
+        "files_processed": [
+          "olist_geolocation_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 209,
+        "valid_rows": 146,
+        "rejected_rows": 1,
+        "malformed_rows": 0,
+        "collapsed_duplicates": 62,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 146,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 146,
+        "rejected_by_rule": {
+          "invalid_latitude": 1
+        },
+        "warnings_by_rule": {
+          "latitude_outside_brazil": 1,
+          "longitude_outside_brazil": 1
+        },
+        "aggregates": [
+          {
+            "name": "rows_represented",
+            "source_valid_total": 208.0,
+            "target_total": 208.0,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          }
+        ]
+      },
+      "product_category_translations": {
+        "files_processed": [
+          "product_category_name_translation.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 10,
+        "valid_rows": 10,
+        "rejected_rows": 0,
+        "malformed_rows": 0,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 10,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 10,
+        "rejected_by_rule": {},
+        "warnings_by_rule": {},
+        "aggregates": []
+      },
+      "customers": {
+        "files_processed": [
+          "olist_customers_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 101,
+        "valid_rows": 100,
+        "rejected_rows": 1,
+        "malformed_rows": 0,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 100,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 100,
+        "rejected_by_rule": {
+          "invalid_zip_prefix": 1
+        },
+        "warnings_by_rule": {},
+        "aggregates": []
+      },
+      "sellers": {
+        "files_processed": [
+          "olist_sellers_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 6,
+        "valid_rows": 5,
+        "rejected_rows": 1,
+        "malformed_rows": 0,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 5,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 5,
+        "rejected_by_rule": {
+          "invalid_state": 1
+        },
+        "warnings_by_rule": {},
+        "aggregates": []
+      },
+      "products": {
+        "files_processed": [
+          "olist_products_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 34,
+        "valid_rows": 33,
+        "rejected_rows": 1,
+        "malformed_rows": 0,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 33,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 33,
+        "rejected_by_rule": {
+          "negative_weight": 1
+        },
+        "warnings_by_rule": {
+          "fk_violation:product_category_name": 4
+        },
+        "aggregates": []
+      },
+      "orders": {
+        "files_processed": [
+          "olist_orders_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 106,
+        "valid_rows": 100,
+        "rejected_rows": 6,
+        "malformed_rows": 1,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 1,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 100,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 100,
+        "rejected_by_rule": {
+          "duplicate_key": 1,
+          "fk_violation:customer_id": 1,
+          "invalid_type:order_purchase_timestamp": 1,
+          "malformed_row": 1,
+          "missing_required:customer_id": 1,
+          "unknown_order_status": 1
+        },
+        "warnings_by_rule": {},
+        "aggregates": []
+      },
+      "order_items": {
+        "files_processed": [
+          "olist_order_items_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 126,
+        "valid_rows": 121,
+        "rejected_rows": 5,
+        "malformed_rows": 1,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 1,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 121,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 121,
+        "rejected_by_rule": {
+          "duplicate_key": 1,
+          "fk_violation:order_id": 1,
+          "fk_violation:product_id": 1,
+          "malformed_row": 1,
+          "non_positive_price": 1
+        },
+        "warnings_by_rule": {},
+        "aggregates": [
+          {
+            "name": "price_total",
+            "source_valid_total": 27487.03,
+            "target_total": 27487.03,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          },
+          {
+            "name": "freight_total",
+            "source_valid_total": 3552.99,
+            "target_total": 3552.99,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          },
+          {
+            "name": "item_total",
+            "source_valid_total": 31040.02,
+            "target_total": 31040.02,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          }
+        ]
+      },
+      "payments": {
+        "files_processed": [
+          "olist_order_payments_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 110,
+        "valid_rows": 107,
+        "rejected_rows": 3,
+        "malformed_rows": 0,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 107,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 107,
+        "rejected_by_rule": {
+          "fk_violation:order_id": 1,
+          "negative_payment": 1,
+          "unknown_payment_type": 1
+        },
+        "warnings_by_rule": {
+          "zero_payment": 2
+        },
+        "aggregates": [
+          {
+            "name": "payment_total",
+            "source_valid_total": 31003.09,
+            "target_total": 31003.09,
+            "difference": 0.0,
+            "status": "match",
+            "reason": null
+          }
+        ]
+      },
+      "reviews": {
+        "files_processed": [
+          "olist_order_reviews_dataset.csv"
+        ],
+        "files_skipped": [],
+        "source_rows": 101,
+        "valid_rows": 99,
+        "rejected_rows": 2,
+        "malformed_rows": 0,
+        "collapsed_duplicates": 0,
+        "flagged_duplicates": 0,
+        "duplicate_key_rows": 0,
+        "missing_key_rows": 0,
+        "recovered_from_quarantine": 0,
+        "inserted": 99,
+        "updated": 0,
+        "unchanged": 0,
+        "stale_not_applied": 0,
+        "deleted": 0,
+        "target_rows_total": 99,
+        "rejected_by_rule": {
+          "fk_violation:order_id": 1,
+          "invalid_review_score": 1
+        },
+        "warnings_by_rule": {},
+        "aggregates": []
+      }
+    },
+    "checks": [
+      {
+        "name": "one_summary_row_per_order",
+        "description": "order_summary has exactly one row per order.",
+        "violations": 0,
+        "status": "pass"
+      },
+      {
+        "name": "summary_items_match_lines",
+        "description": "Summary item totals reconcile to order lines.",
+        "violations": 0,
+        "status": "pass"
+      },
+      {
+        "name": "summary_payments_match_payments",
+        "description": "Summary payment totals reconcile to payments.",
+        "violations": 0,
+        "status": "pass"
+      },
+      {
+        "name": "item_total_formula",
+        "description": "item_total always equals price + freight_value.",
+        "violations": 0,
+        "status": "pass"
+      }
+    ]
+  },
+  "schema_notes": {
+    "geolocation": [
+      {
+        "file": "olist_geolocation_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "product_category_translations": [
+      {
+        "file": "product_category_name_translation.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "customers": [
+      {
+        "file": "olist_customers_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "sellers": [
+      {
+        "file": "olist_sellers_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "products": [
+      {
+        "file": "olist_products_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "orders": [
+      {
+        "file": "olist_orders_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "order_items": [
+      {
+        "file": "olist_order_items_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "payments": [
+      {
+        "file": "olist_order_payments_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ],
+    "reviews": [
+      {
+        "file": "olist_order_reviews_dataset.csv",
+        "missing_optional": [],
+        "unexpected": []
+      }
+    ]
+  }
+}
