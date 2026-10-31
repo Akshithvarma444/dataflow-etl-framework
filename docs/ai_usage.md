@@ -30,7 +30,8 @@ These are recorded because they show why the results needed checking rather than
 | A single-run benchmark seemed to show a speedup, then a slowdown, both really noise | Comparing repeated runs; benchmarks now report medians |
 
 The review findings came after 225 tests passed and 15 of 15 deliberate bugs were caught, so those measures alone
-were not enough. Each defect now has a test in `tests/edge_cases/test_recovery_and_accounting.py`.
+were not enough. The fixes are tested in `tests/edge_cases/test_recovery_and_accounting.py`, except two low-severity items: the
+restored-file limitation, documented in the README, and the `processed_at` clock change, which has no dedicated test.
 
 ## How the results were checked
 
