@@ -1,6 +1,6 @@
 {
-  "mutations": 15,
-  "caught": 15,
+  "mutations": 21,
+  "caught": 21,
   "results": [
     {
       "mutation": "Stale guard removed: old versions overwrite new",
@@ -85,6 +85,42 @@
       "file": "src/loaders/base.py",
       "outcome": "caught",
       "first_failing_test": "tests/edge_cases/test_idempotency.py::test_changed_olist_file_updates_only_changed_rows_and_keeps_history"
+    },
+    {
+      "mutation": "Snapshot deletion guard removed",
+      "file": "src/loaders/postgres_loader.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_recovery_and_accounting.py::test_file_where_every_row_is_rejected_cannot_wipe_its_bookings"
+    },
+    {
+      "mutation": "Superseded rejections stay open and can overwrite corrections",
+      "file": "src/pipelines/pipeline.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_recovery_and_accounting.py::test_row_removed_by_a_correction_does_not_return_when_its_parent_arrives"
+    },
+    {
+      "mutation": "Recovery overwrites rows that arrived another way",
+      "file": "src/pipelines/pipeline.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_recovery_and_accounting.py::test_recovery_never_overwrites_a_row_that_arrived_from_another_file"
+    },
+    {
+      "mutation": "Partial re-delivery treated as comparable",
+      "file": "src/reporting/reconciliation.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_recovery_and_accounting.py::test_partial_redelivery_is_reported_as_not_comparable_not_as_a_pass"
+    },
+    {
+      "mutation": "Extra decimals silently rounded",
+      "file": "src/validators/schema_validator.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_recovery_and_accounting.py::test_more_decimals_than_stored_are_rejected_not_rounded"
+    },
+    {
+      "mutation": "Warnings left out of the row hash",
+      "file": "src/loaders/postgres_loader.py",
+      "outcome": "caught",
+      "first_failing_test": "tests/edge_cases/test_recovery_and_accounting.py::test_changed_warning_rule_refreshes_flags_on_unchanged_rows"
     },
     {
       "mutation": "Retries also repeat permanent failures",

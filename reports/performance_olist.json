@@ -1,0 +1,166 @@
+{
+  "dataset": "olist",
+  "database": "separate _perf database",
+  "results": [
+    {
+      "scenario": "full_load",
+      "requested_size": 1000,
+      "trials": 3,
+      "statuses": [
+        "success"
+      ],
+      "records": 7626,
+      "total_seconds_median": 1.14,
+      "total_seconds_min": 1.044,
+      "total_seconds_max": 1.461,
+      "extraction_seconds_median": 0.049,
+      "validation_seconds_median": 0.111,
+      "transformation_seconds_median": 0.009,
+      "loading_seconds_median": 0.443,
+      "records_per_second_median": 6687.306,
+      "peak_rss_mb_median": 122.438,
+      "inserted": 7024,
+      "unchanged": 0
+    },
+    {
+      "scenario": "full_load",
+      "requested_size": 10000,
+      "trials": 3,
+      "statuses": [
+        "success"
+      ],
+      "records": 75914,
+      "total_seconds_median": 4.921,
+      "total_seconds_min": 4.867,
+      "total_seconds_max": 5.098,
+      "extraction_seconds_median": 0.299,
+      "validation_seconds_median": 0.442,
+      "transformation_seconds_median": 0.031,
+      "loading_seconds_median": 3.361,
+      "records_per_second_median": 15425.446,
+      "peak_rss_mb_median": 143.715,
+      "inserted": 69912,
+      "unchanged": 0
+    },
+    {
+      "scenario": "full_load",
+      "requested_size": 100000,
+      "trials": 3,
+      "statuses": [
+        "success"
+      ],
+      "records": 759067,
+      "total_seconds_median": 77.66,
+      "total_seconds_min": 76.727,
+      "total_seconds_max": 83.425,
+      "extraction_seconds_median": 6.946,
+      "validation_seconds_median": 12.496,
+      "transformation_seconds_median": 0.665,
+      "loading_seconds_median": 54.61,
+      "records_per_second_median": 9774.178,
+      "peak_rss_mb_median": 212.828,
+      "inserted": 699065,
+      "unchanged": 0
+    },
+    {
+      "scenario": "rerun_unchanged_files",
+      "requested_size": 100000,
+      "trials": 3,
+      "statuses": [
+        "skipped"
+      ],
+      "records": 0,
+      "total_seconds_median": 0.956,
+      "total_seconds_min": 0.797,
+      "total_seconds_max": 1.365,
+      "extraction_seconds_median": 0.388,
+      "validation_seconds_median": 0.0,
+      "transformation_seconds_median": 0.0,
+      "loading_seconds_median": 0.0,
+      "records_per_second_median": 0.0,
+      "peak_rss_mb_median": 0.0,
+      "inserted": 0,
+      "unchanged": 0
+    },
+    {
+      "scenario": "backfill_identical_data",
+      "requested_size": 100000,
+      "trials": 3,
+      "statuses": [
+        "success"
+      ],
+      "records": 759067,
+      "total_seconds_median": 62.509,
+      "total_seconds_min": 59.863,
+      "total_seconds_max": 64.068,
+      "extraction_seconds_median": 7.253,
+      "validation_seconds_median": 12.522,
+      "transformation_seconds_median": 0.95,
+      "loading_seconds_median": 37.526,
+      "records_per_second_median": 12143.365,
+      "peak_rss_mb_median": 214.305,
+      "inserted": 0,
+      "unchanged": 699065
+    },
+    {
+      "scenario": "staging_copy",
+      "requested_size": 10000,
+      "trials": 3,
+      "statuses": [
+        "success"
+      ],
+      "records": 75914,
+      "total_seconds_median": 7.911,
+      "total_seconds_min": 4.61,
+      "total_seconds_max": 8.063,
+      "extraction_seconds_median": 0.562,
+      "validation_seconds_median": 1.157,
+      "transformation_seconds_median": 0.078,
+      "loading_seconds_median": 4.706,
+      "records_per_second_median": 9596.261,
+      "peak_rss_mb_median": 188.598,
+      "inserted": 69912,
+      "unchanged": 0
+    },
+    {
+      "scenario": "staging_executemany",
+      "requested_size": 10000,
+      "trials": 3,
+      "statuses": [
+        "success"
+      ],
+      "records": 75914,
+      "total_seconds_median": 20.234,
+      "total_seconds_min": 11.59,
+      "total_seconds_max": 29.572,
+      "extraction_seconds_median": 0.483,
+      "validation_seconds_median": 0.847,
+      "transformation_seconds_median": 0.052,
+      "loading_seconds_median": 17.928,
+      "records_per_second_median": 3751.79,
+      "peak_rss_mb_median": 186.945,
+      "inserted": 69912,
+      "unchanged": 0
+    }
+  ],
+  "serialization_comparison": [
+    {
+      "table": "geolocation",
+      "rows": 100000,
+      "columns": 8,
+      "trials": 5,
+      "per_value_seconds_median": 0.336,
+      "column_mask_seconds_median": 0.268,
+      "speedup": 1.25
+    },
+    {
+      "table": "product_category_translations",
+      "rows": 10,
+      "columns": 2,
+      "trials": 5,
+      "per_value_seconds_median": 0.0,
+      "column_mask_seconds_median": 0.0,
+      "speedup": 0.47
+    }
+  ]
+}
